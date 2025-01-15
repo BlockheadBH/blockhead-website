@@ -3,7 +3,6 @@ import { useContext } from "react";
 import { ContractContext } from "@/context/contract-context";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
-import { toast } from "sonner";
 
 const RefundPayer = ({
   invoiceId,
@@ -18,7 +17,6 @@ const RefundPayer = ({
   const currentTime = Date.now();
   const disAbledButton = currentTime > threeDaysLater;
   const handleClick = async () => {
-    toast.info("Transaction in progress... Please wait");
     await refundPayerAfterWindow(BigInt(invoiceId));
   };
 

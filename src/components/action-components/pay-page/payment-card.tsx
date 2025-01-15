@@ -19,7 +19,6 @@ import { useContext, useState } from "react";
 import { ConnectKitButton } from "connectkit";
 import { PaymentCardProps } from "@/model/model";
 import { formatEther, parseEther } from "viem";
-import { toast } from "sonner";
 
 const PaymentCard = ({ data }: PaymentCardProps) => {
   const router = useRouter();
@@ -34,7 +33,6 @@ const PaymentCard = ({ data }: PaymentCardProps) => {
     parseFloat(amount) <= parseFloat(data?.price || "0");
 
   const handleClick = async () => {
-    toast.info("Transaction in progress... Please wait");
     const invoiceID = BigInt(data?.id);
     const amountInWei = parseEther(amount);
     const success = await makeInvoicePayment(amountInWei, invoiceID);

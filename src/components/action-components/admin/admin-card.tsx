@@ -17,7 +17,6 @@ import { parseEther } from "ethers";
 import { useAccount } from "wagmi";
 import { useGetOwner } from "@/hooks/useGetOwner";
 import { Address } from "viem";
-import { toast } from "sonner";
 
 const AdminCard = () => {
   const { address } = useAccount();
@@ -38,25 +37,21 @@ const AdminCard = () => {
   } = useContext(ContractContext);
 
   const handleReceiverAdd = async () => {
-    toast.info("Transaction in progress... Please wait");
     await setFeeReceiversAddress(receiverAdd as Address);
   };
 
   const handleInvoiceHoldPeriod = async () => {
-    toast.info("Transaction in progress... Please wait");
     const invoiceIdBigNumber = BigInt(invoiceId);
     const holdPeriodInSecond = Number(holdPeriod) * 24 * 60 * 60;
     await setInvoiceHoldPeriod(invoiceIdBigNumber, holdPeriodInSecond);
   };
 
   const handleDefaultPeriod = async () => {
-    toast.info("Transaction in progress... Please wait");
     const defaultPeriodInSecond = BigInt(Number(defaultPeriod) * 24 * 60 * 60);
     await setDefaultHoldPeriod(defaultPeriodInSecond);
   };
 
   const handleBlockHeadFee = async () => {
-    toast.info("Transaction in progress... Please wait");
     const blockHeadFeeInWei = parseEther(blockHeadFee);
     await setFee(blockHeadFeeInWei);
   };

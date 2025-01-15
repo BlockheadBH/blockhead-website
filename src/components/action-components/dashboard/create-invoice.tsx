@@ -33,7 +33,6 @@ const CreateInvoiceDialog = () => {
     useContext(ContractContext);
 
   const handleClick = async () => {
-    toast.info("Transaction in progress... Please wait");
     const amountValue = parseUnits(amount, 18);
     const success = await createInvoice(amountValue);
     setOpenCreate(false);

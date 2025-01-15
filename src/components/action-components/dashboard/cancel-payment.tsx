@@ -3,13 +3,11 @@ import { useContext } from "react";
 import { ContractContext } from "@/context/contract-context";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
-import { toast } from "sonner";
 
 const CancelInvoice = ({ invoiceId }: { invoiceId: string }) => {
   const { cancelInvoice, isLoading } = useContext(ContractContext);
 
   const handleClick = async () => {
-    toast.info("Transaction in progress... Please wait");
     await cancelInvoice(BigInt(invoiceId));
   };
 

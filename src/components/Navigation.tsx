@@ -58,7 +58,7 @@ const Navbar = () => {
                     )}
                     href="/admin"
                   >
-                    Goto admin
+                   ADMIN
                   </Link>
                 ))}
               <ConnectKitButton />

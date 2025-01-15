@@ -210,7 +210,11 @@ const WalletProvider = ({ children }: Props) => {
 
     setIsLoading(action);
     let success = false;
+
     try {
+      toast.info("Transaction in progress...", {
+        duration: Infinity,
+      });
       const tx = await walletClient?.writeContract({
         address: INVOICE_ADDRESS[chainId],
         abi: PaymentProcessor__factory.abi,
@@ -240,6 +244,7 @@ const WalletProvider = ({ children }: Props) => {
     setIsLoading("cancelInvoice");
 
     let success = false;
+    let progressToastId;
     try {
       const tx = await walletClient?.writeContract({
         address: INVOICE_ADDRESS[chainId],
@@ -248,14 +253,20 @@ const WalletProvider = ({ children }: Props) => {
         args: [invoiceId],
       });
 
+      progressToastId = toast.info("Transaction in progress...", {
+        duration: Infinity,
+      });
+
       const receipt = await publicClient?.waitForTransactionReceipt({
         hash: tx!,
       });
       if (receipt?.status) {
+        toast.dismiss(progressToastId);
         toast.success("Invoice successfully cancelled");
         await getInvoiceData();
         success = true;
       } else {
+        toast.dismiss(progressToastId);
         toast.error("something went wrong, Please try again.");
       }
     } catch (error) {
@@ -269,6 +280,7 @@ const WalletProvider = ({ children }: Props) => {
     setIsLoading("releaseInvoice");
 
     let success = false;
+    let progressToastId;
     try {
       const tx = await walletClient?.writeContract({
         address: INVOICE_ADDRESS[chainId],
@@ -277,17 +289,24 @@ const WalletProvider = ({ children }: Props) => {
         args: [invoiceId],
       });
 
+      progressToastId = toast.info("Transaction in progress...", {
+        duration: Infinity,
+      });
+
       const receipt = await publicClient?.waitForTransactionReceipt({
         hash: tx!,
       });
       if (receipt?.status) {
+        toast.dismiss(progressToastId);
         toast.success("Invoice successfully released");
         await getInvoiceData();
         success = true;
       } else {
+        toast.dismiss(progressToastId);
         toast.error("something went wrong, Please try again.");
       }
     } catch (error) {
+      toast.dismiss(progressToastId);
       getError(error);
     }
     setIsLoading("");
@@ -300,6 +319,7 @@ const WalletProvider = ({ children }: Props) => {
     setIsLoading("refundPayerAfterWindow");
 
     let success = false;
+    let progressToastId;
     try {
       const tx = await walletClient?.writeContract({
         address: INVOICE_ADDRESS[chainId],
@@ -308,17 +328,24 @@ const WalletProvider = ({ children }: Props) => {
         args: [invoiceId],
       });
 
+      progressToastId = toast.info("Transaction in progress...", {
+        duration: Infinity,
+      });
+
       const receipt = await publicClient?.waitForTransactionReceipt({
         hash: tx!,
       });
       if (receipt?.status) {
+        toast.dismiss(progressToastId);
         toast.success("Refund to payer successfully processed");
         await getInvoiceData();
         success = true;
       } else {
+        toast.dismiss(progressToastId);
         toast.error("An unexpected error occurred during refund.");
       }
     } catch (error) {
+      toast.dismiss(progressToastId);
       getError(error);
     }
     setIsLoading("");
@@ -329,6 +356,7 @@ const WalletProvider = ({ children }: Props) => {
     setIsLoading("setFeeReceiversAddress");
 
     let success = false;
+    let progressToastId;
     try {
       const tx = await walletClient?.writeContract({
         address: INVOICE_ADDRESS[chainId],
@@ -337,18 +365,25 @@ const WalletProvider = ({ children }: Props) => {
         args: [address],
       });
 
+      progressToastId = toast.info("Transaction in progress...", {
+        duration: Infinity,
+      });
+
       const receipt = await publicClient?.waitForTransactionReceipt({
         hash: tx!,
       });
 
       if (receipt?.status) {
+        toast.dismiss(progressToastId);
         toast.success("Fee receiver address updated successfully");
         await getInvoiceData();
         success = true;
       } else {
+        toast.dismiss(progressToastId);
         toast.error("Failed to update fee receiver address. Please try again.");
       }
     } catch (error) {
+      toast.dismiss(progressToastId);
       getError(error);
     }
     setIsLoading("");
@@ -362,6 +397,7 @@ const WalletProvider = ({ children }: Props) => {
     setIsLoading("setInvoiceHoldPeriod");
 
     let success = false;
+    let progressToastId;
     try {
       const tx = await walletClient?.writeContract({
         address: INVOICE_ADDRESS[chainId],
@@ -370,10 +406,16 @@ const WalletProvider = ({ children }: Props) => {
         args: [invoiceId, holdPeriod],
       });
 
+      progressToastId = toast.info("Transaction in progress...", {
+        duration: Infinity,
+      });
+
       const receipt = await publicClient?.waitForTransactionReceipt({
         hash: tx!,
       });
+
       if (receipt?.status) {
+        toast.dismiss(progressToastId);
         toast.success("Invoice hold period successfully set");
         await getInvoiceData();
         success = true;
@@ -381,6 +423,7 @@ const WalletProvider = ({ children }: Props) => {
         toast.error("Failed to set invoice hold period. Please try again");
       }
     } catch (error) {
+      toast.dismiss(progressToastId);
       getError(error);
     }
     setIsLoading("");
@@ -393,6 +436,7 @@ const WalletProvider = ({ children }: Props) => {
     setIsLoading("setDefaultHoldPeriod");
 
     let success = false;
+    let progressToastId;
     try {
       const tx = await walletClient?.writeContract({
         address: INVOICE_ADDRESS[chainId],
@@ -401,17 +445,24 @@ const WalletProvider = ({ children }: Props) => {
         args: [newDefaultHoldPeriod],
       });
 
+      progressToastId = toast.info("Transaction in progress...", {
+        duration: Infinity,
+      });
+
       const receipt = await publicClient?.waitForTransactionReceipt({
         hash: tx!,
       });
       if (receipt?.status) {
+        toast.dismiss(progressToastId);
         toast.success("Successfully set new default hold period");
         await getInvoiceData();
         success = true;
       } else {
+        toast.dismiss(progressToastId);
         toast.error("Failed to set new default hold period. Please try again");
       }
     } catch (error) {
+      toast.dismiss(progressToastId);
       getError(error);
     }
     setIsLoading("");
@@ -422,6 +473,7 @@ const WalletProvider = ({ children }: Props) => {
     setIsLoading("setFee");
 
     let success = false;
+    let progressToastId;
     try {
       const tx = await walletClient?.writeContract({
         address: INVOICE_ADDRESS[chainId],
@@ -430,18 +482,25 @@ const WalletProvider = ({ children }: Props) => {
         args: [newFee],
       });
 
+      progressToastId = toast.info("Transaction in progress...", {
+        duration: Infinity,
+      });
+
       const receipt = await publicClient?.waitForTransactionReceipt({
         hash: tx!,
       });
 
       if (receipt?.status) {
+        toast.dismiss(progressToastId);
         toast.success("Successfully set new fee");
         await getInvoiceData();
         success = true;
       } else {
+        toast.dismiss(progressToastId);
         toast.error("Failed to set new fee. Please try again");
       }
     } catch (error) {
+      toast.dismiss(progressToastId);
       getError(error);
     }
     setIsLoading("");
