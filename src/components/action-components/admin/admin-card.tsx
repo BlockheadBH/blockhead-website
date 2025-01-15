@@ -32,6 +32,7 @@ const AdminCard = () => {
     setFeeReceiversAddress,
     setInvoiceHoldPeriod,
     setDefaultHoldPeriod,
+    withdrawFees,
     setFee,
     isLoading,
   } = useContext(ContractContext);
@@ -54,6 +55,10 @@ const AdminCard = () => {
   const handleBlockHeadFee = async () => {
     const blockHeadFeeInWei = parseEther(blockHeadFee);
     await setFee(blockHeadFeeInWei);
+  };
+
+  const handleWithdrawFee = async () => {
+    await withdrawFees();
   };
 
   if (address !== allowedAddress) {
@@ -96,7 +101,7 @@ const AdminCard = () => {
                     color="#cee7d6"
                   />
                 ) : (
-                  "Deploy"
+                  "SET"
                 )}
               </Button>
             </div>
@@ -130,7 +135,7 @@ const AdminCard = () => {
                     color="#cee7d6"
                   />
                 ) : (
-                  "Deploy"
+                  "SET"
                 )}
               </Button>
             </div>
@@ -158,7 +163,7 @@ const AdminCard = () => {
                     color="#cee7d6"
                   />
                 ) : (
-                  "Deploy"
+                  "SET"
                 )}
               </Button>
             </div>
@@ -185,7 +190,7 @@ const AdminCard = () => {
                     color="#cee7d6"
                   />
                 ) : (
-                  "Deploy"
+                  "SET"
                 )}
               </Button>
             </div>
@@ -193,6 +198,25 @@ const AdminCard = () => {
               Updates the fee for using Blockhead service.
             </p>
           </div>
+        </div>
+        <div className="my-3 space-y-1.5">
+          <Label htmlFor="setFee">Withdraw fees</Label>
+          <div className="flex flex-col-1">
+            <Button onClick={handleWithdrawFee} className="w-full">
+              {isLoading === "withdrawFees" ? (
+                <Loader2
+                  className="inline-flex animate-spin"
+                  size={10}
+                  color="#cee7d6"
+                />
+              ) : (
+                "WITHDRAW"
+              )}
+            </Button>
+          </div>
+          <p className="text-sm text-muted-foreground">
+            Withdraw fee from Blockhead service.
+          </p>
         </div>
       </CardContent>
       <CardFooter className="flex justify-between">

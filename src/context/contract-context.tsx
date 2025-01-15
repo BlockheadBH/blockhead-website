@@ -18,6 +18,7 @@ export interface ContractContextData {
   ) => Promise<boolean>;
   setDefaultHoldPeriod: (newDefaultHoldPeriod: bigint) => Promise<boolean>;
   setFee: (newFee: bigint) => Promise<boolean>;
+  withdrawFees: () => Promise<boolean>;
   refetchInvoiceData?: () => Promise<void>;
 }
 export const contractContextDefaults: ContractContextData = {
@@ -33,6 +34,7 @@ export const contractContextDefaults: ContractContextData = {
   setInvoiceHoldPeriod: async () => Promise.resolve(false),
   setDefaultHoldPeriod: async () => Promise.resolve(false),
   setFee: async () => Promise.resolve(false),
+  withdrawFees: async () => Promise.resolve(false),
   refetchInvoiceData: async () => Promise.resolve(),
 };
 export const ContractContext = React.createContext<ContractContextData>(

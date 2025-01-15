@@ -155,12 +155,6 @@ const _abi = [
         name: "invoiceId",
         type: "uint256",
       },
-      {
-        indexed: true,
-        internalType: "uint256",
-        name: "acceptedAt",
-        type: "uint256",
-      },
     ],
     name: "InvoiceAccepted",
     type: "event",
@@ -194,15 +188,9 @@ const _abi = [
         type: "address",
       },
       {
-        indexed: false,
-        internalType: "uint256",
-        name: "price",
-        type: "uint256",
-      },
-      {
         indexed: true,
         internalType: "uint256",
-        name: "createdAt",
+        name: "price",
         type: "uint256",
       },
     ],
@@ -227,13 +215,7 @@ const _abi = [
       {
         indexed: true,
         internalType: "uint256",
-        name: "amountPayed",
-        type: "uint256",
-      },
-      {
-        indexed: false,
-        internalType: "uint256",
-        name: "payedAt",
+        name: "amountPaid",
         type: "uint256",
       },
     ],
@@ -480,12 +462,12 @@ const _abi = [
           },
           {
             internalType: "uint256",
-            name: "amountPayed",
+            name: "amountPaid",
             type: "uint256",
           },
           {
             internalType: "uint32",
-            name: "creationTime",
+            name: "createdAt",
             type: "uint32",
           },
           {
@@ -658,6 +640,19 @@ const _abi = [
     name: "setInvoiceHoldPeriod",
     outputs: [],
     stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "totalInvoiceCreated",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
     type: "function",
   },
   {

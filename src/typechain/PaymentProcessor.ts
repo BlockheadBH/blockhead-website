@@ -28,8 +28,8 @@ export type InvoiceStruct = {
   payer: AddressLike;
   escrow: AddressLike;
   price: BigNumberish;
-  amountPayed: BigNumberish;
-  creationTime: BigNumberish;
+  amountPaid: BigNumberish;
+  createdAt: BigNumberish;
   paymentTime: BigNumberish;
   holdPeriod: BigNumberish;
   status: BigNumberish;
@@ -40,8 +40,8 @@ export type InvoiceStructOutput = [
   payer: string,
   escrow: string,
   price: bigint,
-  amountPayed: bigint,
-  creationTime: bigint,
+  amountPaid: bigint,
+  createdAt: bigint,
   paymentTime: bigint,
   holdPeriod: bigint,
   status: bigint
@@ -50,8 +50,8 @@ export type InvoiceStructOutput = [
   payer: string;
   escrow: string;
   price: bigint;
-  amountPayed: bigint;
-  creationTime: bigint;
+  amountPaid: bigint;
+  createdAt: bigint;
   paymentTime: bigint;
   holdPeriod: bigint;
   status: bigint;
@@ -81,6 +81,7 @@ export interface PaymentProcessorInterface extends Interface {
       | "setFee"
       | "setFeeReceiversAddress"
       | "setInvoiceHoldPeriod"
+      | "totalInvoiceCreated"
       | "transferOwnership"
       | "withdrawFees"
   ): FunctionFragment;
@@ -178,6 +179,10 @@ export interface PaymentProcessorInterface extends Interface {
     values: [BigNumberish, BigNumberish]
   ): string;
   encodeFunctionData(
+    functionFragment: "totalInvoiceCreated",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
     functionFragment: "transferOwnership",
     values: [AddressLike]
   ): string;
@@ -262,6 +267,10 @@ export interface PaymentProcessorInterface extends Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
+    functionFragment: "totalInvoiceCreated",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "transferOwnership",
     data: BytesLike
   ): Result;
@@ -272,11 +281,10 @@ export interface PaymentProcessorInterface extends Interface {
 }
 
 export namespace InvoiceAcceptedEvent {
-  export type InputTuple = [invoiceId: BigNumberish, acceptedAt: BigNumberish];
-  export type OutputTuple = [invoiceId: bigint, acceptedAt: bigint];
+  export type InputTuple = [invoiceId: BigNumberish];
+  export type OutputTuple = [invoiceId: bigint];
   export interface OutputObject {
     invoiceId: bigint;
-    acceptedAt: bigint;
   }
   export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
   export type Filter = TypedDeferredTopicFilter<Event>;
@@ -300,20 +308,13 @@ export namespace InvoiceCreatedEvent {
   export type InputTuple = [
     invoiceId: BigNumberish,
     creator: AddressLike,
-    price: BigNumberish,
-    createdAt: BigNumberish
+    price: BigNumberish
   ];
-  export type OutputTuple = [
-    invoiceId: bigint,
-    creator: string,
-    price: bigint,
-    createdAt: bigint
-  ];
+  export type OutputTuple = [invoiceId: bigint, creator: string, price: bigint];
   export interface OutputObject {
     invoiceId: bigint;
     creator: string;
     price: bigint;
-    createdAt: bigint;
   }
   export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
   export type Filter = TypedDeferredTopicFilter<Event>;
@@ -325,20 +326,17 @@ export namespace InvoicePaidEvent {
   export type InputTuple = [
     invoiceId: BigNumberish,
     payer: AddressLike,
-    amountPayed: BigNumberish,
-    payedAt: BigNumberish
+    amountPaid: BigNumberish
   ];
   export type OutputTuple = [
     invoiceId: bigint,
     payer: string,
-    amountPayed: bigint,
-    payedAt: bigint
+    amountPaid: bigint
   ];
   export interface OutputObject {
     invoiceId: bigint;
     payer: string;
-    amountPayed: bigint;
-    payedAt: bigint;
+    amountPaid: bigint;
   }
   export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
   export type Filter = TypedDeferredTopicFilter<Event>;
@@ -552,6 +550,8 @@ export interface PaymentProcessor extends BaseContract {
     "nonpayable"
   >;
 
+  totalInvoiceCreated: TypedContractMethod<[], [bigint], "view">;
+
   transferOwnership: TypedContractMethod<
     [newOwner: AddressLike],
     [void],
@@ -644,6 +644,9 @@ export interface PaymentProcessor extends BaseContract {
     "nonpayable"
   >;
   getFunction(
+    nameOrSignature: "totalInvoiceCreated"
+  ): TypedContractMethod<[], [bigint], "view">;
+  getFunction(
     nameOrSignature: "transferOwnership"
   ): TypedContractMethod<[newOwner: AddressLike], [void], "payable">;
   getFunction(
@@ -722,7 +725,7 @@ export interface PaymentProcessor extends BaseContract {
   >;
 
   filters: {
-    "InvoiceAccepted(uint256,uint256)": TypedContractEvent<
+    "InvoiceAccepted(uint256)": TypedContractEvent<
       InvoiceAcceptedEvent.InputTuple,
       InvoiceAcceptedEvent.OutputTuple,
       InvoiceAcceptedEvent.OutputObject
@@ -744,7 +747,7 @@ export interface PaymentProcessor extends BaseContract {
       InvoiceCanceledEvent.OutputObject
     >;
 
-    "InvoiceCreated(uint256,address,uint256,uint256)": TypedContractEvent<
+    "InvoiceCreated(uint256,address,uint256)": TypedContractEvent<
       InvoiceCreatedEvent.InputTuple,
       InvoiceCreatedEvent.OutputTuple,
       InvoiceCreatedEvent.OutputObject
@@ -755,7 +758,7 @@ export interface PaymentProcessor extends BaseContract {
       InvoiceCreatedEvent.OutputObject
     >;
 
-    "InvoicePaid(uint256,address,uint256,uint256)": TypedContractEvent<
+    "InvoicePaid(uint256,address,uint256)": TypedContractEvent<
       InvoicePaidEvent.InputTuple,
       InvoicePaidEvent.OutputTuple,
       InvoicePaidEvent.OutputObject

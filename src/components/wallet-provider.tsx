@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import { formatEther } from "ethers";
 import { useAccount, usePublicClient, useWalletClient } from "wagmi";
 import { PaymentProcessor__factory } from "@/typechain";
-import { Address } from "viem";
+import { Address, encodeFunctionData } from "viem";
 import { createClient } from "urql";
 import { ContractContext } from "@/context/contract-context";
 import {
@@ -15,6 +15,7 @@ import {
   errorMessages,
 } from "@/constants";
 import { UserCreatedInvoice, Invoice, UserPaidInvoice } from "@/model/model";
+import { polygonAmoy } from "viem/chains";
 
 type Props = {
   children?: ReactNode;
@@ -93,6 +94,7 @@ const WalletProvider = ({ children }: Props) => {
 
       if (error) {
         console.log(error.message);
+        return;
       }
 
       const createdInvoice: UserCreatedInvoice[] =
@@ -147,12 +149,16 @@ const WalletProvider = ({ children }: Props) => {
 
     let success = false;
     try {
-      const tx = await walletClient?.writeContract({
-        address: INVOICE_ADDRESS[chainId],
-        abi: PaymentProcessor__factory.abi,
-        functionName: "createInvoice",
-        args: [invoicePrice],
+      const tx = await walletClient?.sendTransaction({
+        chain: polygonAmoy,
+        to: INVOICE_ADDRESS[chainId],
+        data: encodeFunctionData({
+          abi: PaymentProcessor__factory.abi,
+          functionName: "createInvoice",
+          args: [invoicePrice],
+        }),
       });
+
       const receipt = await publicClient?.waitForTransactionReceipt({
         hash: tx!,
       });
@@ -164,7 +170,6 @@ const WalletProvider = ({ children }: Props) => {
         toast.error("something went wrong, Please try again.");
       }
     } catch (error) {
-      console.log(error);
       getError(error);
     }
     setIsLoading("");
@@ -179,13 +184,17 @@ const WalletProvider = ({ children }: Props) => {
 
     let success = false;
     try {
-      const tx = await walletClient?.writeContract({
-        address: INVOICE_ADDRESS[chainId],
-        abi: PaymentProcessor__factory.abi,
-        functionName: "makeInvoicePayment",
-        args: [invoiceId],
+      const tx = await walletClient?.sendTransaction({
+        chain: polygonAmoy,
+        to: INVOICE_ADDRESS[chainId],
+        data: encodeFunctionData({
+          abi: PaymentProcessor__factory.abi,
+          functionName: "makeInvoicePayment",
+          args: [invoiceId],
+        }),
         value: amount,
       });
+
       const receipt = await publicClient?.waitForTransactionReceipt({
         hash: tx!,
       });
@@ -214,11 +223,14 @@ const WalletProvider = ({ children }: Props) => {
     let progressToastId;
 
     try {
-      const tx = await walletClient?.writeContract({
-        address: INVOICE_ADDRESS[chainId],
-        abi: PaymentProcessor__factory.abi,
-        functionName: "creatorsAction",
-        args: [invoiceId, state],
+      const tx = await walletClient?.sendTransaction({
+        chain: polygonAmoy,
+        to: INVOICE_ADDRESS[chainId],
+        data: encodeFunctionData({
+          abi: PaymentProcessor__factory.abi,
+          functionName: "creatorsAction",
+          args: [invoiceId, state],
+        }),
       });
 
       progressToastId = toast.info("Transaction in progress...", {
@@ -252,11 +264,14 @@ const WalletProvider = ({ children }: Props) => {
     let success = false;
     let progressToastId;
     try {
-      const tx = await walletClient?.writeContract({
-        address: INVOICE_ADDRESS[chainId],
-        abi: PaymentProcessor__factory.abi,
-        functionName: "cancelInvoice",
-        args: [invoiceId],
+      const tx = await walletClient?.sendTransaction({
+        chain: polygonAmoy,
+        to: INVOICE_ADDRESS[chainId],
+        data: encodeFunctionData({
+          abi: PaymentProcessor__factory.abi,
+          functionName: "cancelInvoice",
+          args: [invoiceId],
+        }),
       });
 
       progressToastId = toast.info("Transaction in progress...", {
@@ -288,11 +303,14 @@ const WalletProvider = ({ children }: Props) => {
     let success = false;
     let progressToastId;
     try {
-      const tx = await walletClient?.writeContract({
-        address: INVOICE_ADDRESS[chainId],
-        abi: PaymentProcessor__factory.abi,
-        functionName: "releaseInvoice",
-        args: [invoiceId],
+      const tx = await walletClient?.sendTransaction({
+        chain: polygonAmoy,
+        to: INVOICE_ADDRESS[chainId],
+        data: encodeFunctionData({
+          abi: PaymentProcessor__factory.abi,
+          functionName: "releaseInvoice",
+          args: [invoiceId],
+        }),
       });
 
       progressToastId = toast.info("Transaction in progress...", {
@@ -327,11 +345,14 @@ const WalletProvider = ({ children }: Props) => {
     let success = false;
     let progressToastId;
     try {
-      const tx = await walletClient?.writeContract({
-        address: INVOICE_ADDRESS[chainId],
-        abi: PaymentProcessor__factory.abi,
-        functionName: "refundPayerAfterWindow",
-        args: [invoiceId],
+      const tx = await walletClient?.sendTransaction({
+        chain: polygonAmoy,
+        to: INVOICE_ADDRESS[chainId],
+        data: encodeFunctionData({
+          abi: PaymentProcessor__factory.abi,
+          functionName: "refundPayerAfterWindow",
+          args: [invoiceId],
+        }),
       });
 
       progressToastId = toast.info("Transaction in progress...", {
@@ -364,11 +385,14 @@ const WalletProvider = ({ children }: Props) => {
     let success = false;
     let progressToastId;
     try {
-      const tx = await walletClient?.writeContract({
-        address: INVOICE_ADDRESS[chainId],
-        abi: PaymentProcessor__factory.abi,
-        functionName: "setFeeReceiversAddress",
-        args: [address],
+      const tx = await walletClient?.sendTransaction({
+        chain: polygonAmoy,
+        to: INVOICE_ADDRESS[chainId],
+        data: encodeFunctionData({
+          abi: PaymentProcessor__factory.abi,
+          functionName: "setFeeReceiversAddress",
+          args: [address],
+        }),
       });
 
       progressToastId = toast.info("Transaction in progress...", {
@@ -405,11 +429,14 @@ const WalletProvider = ({ children }: Props) => {
     let success = false;
     let progressToastId;
     try {
-      const tx = await walletClient?.writeContract({
-        address: INVOICE_ADDRESS[chainId],
-        abi: PaymentProcessor__factory.abi,
-        functionName: "setInvoiceHoldPeriod",
-        args: [invoiceId, holdPeriod],
+      const tx = await walletClient?.sendTransaction({
+        chain: polygonAmoy,
+        to: INVOICE_ADDRESS[chainId],
+        data: encodeFunctionData({
+          abi: PaymentProcessor__factory.abi,
+          functionName: "setInvoiceHoldPeriod",
+          args: [invoiceId, holdPeriod],
+        }),
       });
 
       progressToastId = toast.info("Transaction in progress...", {
@@ -444,11 +471,14 @@ const WalletProvider = ({ children }: Props) => {
     let success = false;
     let progressToastId;
     try {
-      const tx = await walletClient?.writeContract({
-        address: INVOICE_ADDRESS[chainId],
-        abi: PaymentProcessor__factory.abi,
-        functionName: "setDefaultHoldPeriod",
-        args: [newDefaultHoldPeriod],
+      const tx = await walletClient?.sendTransaction({
+        chain: polygonAmoy,
+        to: INVOICE_ADDRESS[chainId],
+        data: encodeFunctionData({
+          abi: PaymentProcessor__factory.abi,
+          functionName: "setDefaultHoldPeriod",
+          args: [newDefaultHoldPeriod],
+        }),
       });
 
       progressToastId = toast.info("Transaction in progress...", {
@@ -481,11 +511,14 @@ const WalletProvider = ({ children }: Props) => {
     let success = false;
     let progressToastId;
     try {
-      const tx = await walletClient?.writeContract({
-        address: INVOICE_ADDRESS[chainId],
-        abi: PaymentProcessor__factory.abi,
-        functionName: "setFee",
-        args: [newFee],
+      const tx = await walletClient?.sendTransaction({
+        chain: polygonAmoy,
+        to: INVOICE_ADDRESS[chainId],
+        data: encodeFunctionData({
+          abi: PaymentProcessor__factory.abi,
+          functionName: "setFee",
+          args: [newFee],
+        }),
       });
 
       progressToastId = toast.info("Transaction in progress...", {
@@ -512,6 +545,45 @@ const WalletProvider = ({ children }: Props) => {
     setIsLoading("");
     return success;
   };
+
+  const withdrawFees = async (): Promise<boolean> => {
+    setIsLoading("withdrawFees");
+    let success = false;
+    let progressToastId;
+    try {
+      const tx = await walletClient?.sendTransaction({
+        chain: polygonAmoy,
+        to: INVOICE_ADDRESS[chainId],
+        data: encodeFunctionData({
+          abi: PaymentProcessor__factory.abi,
+          functionName: "withdrawFees",
+        }),
+      });
+
+      progressToastId = toast.info("Transaction in progress...", {
+        duration: Infinity,
+      });
+
+      const receipt = await publicClient?.waitForTransactionReceipt({
+        hash: tx!,
+      });
+      if (receipt?.status) {
+        toast.dismiss(progressToastId);
+        toast.success("Successfully withdraw fees");
+        await getInvoiceData();
+        success = true;
+      } else {
+        toast.dismiss(progressToastId);
+        toast.error("Failed to set new fee. Please try again");
+      }
+    } catch (error) {
+      toast.dismiss(progressToastId);
+      getError(error);
+    }
+    setIsLoading("");
+    return success;
+  };
+
   return (
     <ContractContext.Provider
       value={{
@@ -527,6 +599,7 @@ const WalletProvider = ({ children }: Props) => {
         setInvoiceHoldPeriod,
         setDefaultHoldPeriod,
         setFee,
+        withdrawFees,
         refetchInvoiceData: async () => {
           await getInvoiceData();
         },
