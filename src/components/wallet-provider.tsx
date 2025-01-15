@@ -212,14 +212,15 @@ const WalletProvider = ({ children }: Props) => {
     let success = false;
 
     try {
-      toast.info("Transaction in progress...", {
-        duration: Infinity,
-      });
       const tx = await walletClient?.writeContract({
         address: INVOICE_ADDRESS[chainId],
         abi: PaymentProcessor__factory.abi,
         functionName: "creatorsAction",
         args: [invoiceId, state],
+      });
+
+      toast.info("Transaction in progress...", {
+        duration: Infinity,
       });
 
       const receipt = await publicClient?.waitForTransactionReceipt({
