@@ -3,7 +3,7 @@ import type { Address } from "viem";
 import { polygonAmoy } from "wagmi/chains";
 
 export const POLYGON = 137;
-export const POLYGON_AMOY = 80002;
+export const POLYGON_AMOY = 80_002;
 
 export const INVOICE_ADDRESS: Record<number, Address> = {
   [polygonAmoy.id]: "0x74BEeeEeE0CdaE7C2f46e56a6760cdceb915b6de",
