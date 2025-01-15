@@ -164,6 +164,7 @@ const WalletProvider = ({ children }: Props) => {
         toast.error("something went wrong, Please try again.");
       }
     } catch (error) {
+      console.log(error);
       getError(error);
     }
     setIsLoading("");

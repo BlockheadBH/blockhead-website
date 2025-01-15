@@ -56,7 +56,7 @@ const CreateInvoiceDialog = () => {
           <DialogHeader>
             <DialogTitle className="text-2xl">New Invoice</DialogTitle>
             <DialogDescription className="text-sm text-muted-foreground">
-              *Additional fee of {formatedFee} POL applies excluding gas fee*
+              Additional fee of {formatedFee} POL applies excluding gas fee
             </DialogDescription>
           </DialogHeader>
 
@@ -69,7 +69,7 @@ const CreateInvoiceDialog = () => {
                 id="value"
                 type="number"
                 value={amount}
-                placeholder="enter amount in pol"
+                placeholder="Enter amount in pol"
                 onChange={(e) => setAmount(e.target.value)}
                 className="col-span-3"
               />

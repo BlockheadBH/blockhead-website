@@ -154,15 +154,22 @@ const columns: ColumnDef<Invoice>[] = [
                 <ReleaseInvoice invoiceId={payment.id} />
               </DropdownMenuItem>
             )}
-
-            {payment?.status !== "REFUNDED" && payment?.type === "Payer" && (
-              <DropdownMenuItem>
-                <RefundPayer
-                  invoiceId={payment.id}
-                  timeStamp={payment.paidAt}
-                />
-              </DropdownMenuItem>
-            )}
+            {payment?.status !== "REFUNDED" &&
+              payment?.status !== "REJECTED" &&
+              payment?.type === "Payer" && (
+                <DropdownMenuItem>
+                  <RefundPayer
+                    invoiceId={payment.id}
+                    timeStamp={payment.paidAt}
+                  />
+                </DropdownMenuItem>
+              )}
+            {payment?.status === "REFUNDED" ||
+              (payment?.status === "REJECTED" && payment?.type === "Payer" && (
+                <DropdownMenuItem>
+                  <Button className="w-full">All Settled</Button>
+                </DropdownMenuItem>
+              ))}
           </DropdownMenuContent>
         </DropdownMenu>
       );

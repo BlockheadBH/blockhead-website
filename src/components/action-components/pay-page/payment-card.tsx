@@ -76,8 +76,8 @@ const PaymentCard = ({ data }: PaymentCardProps) => {
               disabled={data?.status !== "CREATED"}
             />
             <p className="text-sm text-red-400">
-              *Invoice creator cannot make this payment, Additional fee of{" "}
-              {formatedFee} POL applies excluding gas fee*
+              Invoice creator cannot make this payment, Additional fee of{" "}
+              {formatedFee} POL applies excluding gas fee
             </p>
           </div>
         </div>
