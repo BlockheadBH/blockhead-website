@@ -210,6 +210,7 @@ const WalletProvider = ({ children }: Props) => {
 
     setIsLoading(action);
     let success = false;
+    let progressToastId;
 
     try {
       const tx = await walletClient?.writeContract({
@@ -219,7 +220,7 @@ const WalletProvider = ({ children }: Props) => {
         args: [invoiceId, state],
       });
 
-      toast.info("Transaction in progress...", {
+      progressToastId = toast.info("Transaction in progress...", {
         duration: Infinity,
       });
 
@@ -228,13 +229,16 @@ const WalletProvider = ({ children }: Props) => {
       });
 
       if (receipt?.status) {
+        toast.dismiss(progressToastId);
         toast.success(`Successfully ${action} the invoice.`);
         await getInvoiceData();
         success = true;
       } else {
+        toast.dismiss(progressToastId);
         toast.error("something went wrong, Please try again.");
       }
     } catch (error) {
+      toast.dismiss(progressToastId);
       getError(error);
     }
     setIsLoading("");
