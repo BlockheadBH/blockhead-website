@@ -178,7 +178,7 @@ const WalletProvider = ({ children }: Props) => {
         await getInvoiceData();
         success = true;
       } else {
-        toast.error("something went wrong, Please try again.");
+        toast.error("Error creating invoice, Please try again.");
       }
     } catch (error) {
       getError(error);

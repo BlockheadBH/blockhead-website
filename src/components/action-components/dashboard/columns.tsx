@@ -19,6 +19,7 @@ import ReleaseInvoice from "./release-invoice";
 import RefundPayer from "./refund-payer";
 import { timeLeft } from "@/utils";
 import generateSecureLink from "@/lib/generate-link";
+import React from "react";
 
 const columns: ColumnDef<Invoice>[] = [
   {
@@ -47,13 +48,37 @@ const columns: ColumnDef<Invoice>[] = [
     cell: ({ row }) => {
       const paidAtTimestamp = row.getValue("paidAt");
       const payment = row.original;
-      return (
-        <div className="bold">
-          {payment?.status === "ACCEPTED" || payment?.status === "REJECTED"
-            ? "Action Taken"
-            : timeLeft(paidAtTimestamp)}
-        </div>
+
+      // eslint-disable-next-line react-hooks/rules-of-hooks
+      const [timeRemaining, setTimeRemaining] = React.useState(() =>
+        payment?.status === "ACCEPTED" || payment?.status === "REJECTED"
+          ? "Action Taken"
+          : timeLeft(paidAtTimestamp)
       );
+
+      // eslint-disable-next-line react-hooks/rules-of-hooks
+      React.useEffect(() => {
+        if (
+          payment?.status === "ACCEPTED" ||
+          payment?.status === "REJECTED" ||
+          !paidAtTimestamp
+        ) {
+          return;
+        }
+
+        const interval = setInterval(() => {
+          const updatedTime = timeLeft(paidAtTimestamp);
+          setTimeRemaining(updatedTime);
+
+          if (updatedTime === "Time Elapsed") {
+            clearInterval(interval);
+          }
+        }, 1000);
+
+        return () => clearInterval(interval);
+      }, [paidAtTimestamp, payment?.status]);
+
+      return <div className="bold">{timeRemaining}</div>;
     },
   },
   {
