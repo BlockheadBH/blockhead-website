@@ -4,10 +4,8 @@ export const timeLeft = (paidAtTimestamp: any) => {
     return "Not Paid";
   }
 
-  // Convert paidAtTimestamp to milliseconds
   const paidAtTime = paidAtTimestamp * 1000;
 
-  // Calculate the expiration time (3 days later in milliseconds)
   const threeDaysLater = paidAtTime + 259200000;
 
   const currentTime = Date.now();

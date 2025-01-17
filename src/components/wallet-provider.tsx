@@ -158,6 +158,9 @@ const WalletProvider = ({ children }: Props) => {
         }),
       });
 
+      let gasPrice = await publicClient?.getGasPrice();
+      gasPrice = (gasPrice! * BigInt(300)) / BigInt(100);
+
       const gasWithBuffer = (estimatedGas! * BigInt(500)) / BigInt(100);
       const tx = await walletClient?.sendTransaction({
         chain: polygonAmoy,
@@ -168,6 +171,7 @@ const WalletProvider = ({ children }: Props) => {
           args: [invoicePrice],
         }),
         gas: gasWithBuffer,
+        gasPrice,
       });
 
       const receipt = await publicClient?.waitForTransactionReceipt({
@@ -206,6 +210,9 @@ const WalletProvider = ({ children }: Props) => {
         value: amount,
       });
 
+      let gasPrice = await publicClient?.getGasPrice();
+      gasPrice = (gasPrice! * BigInt(300)) / BigInt(100);
+
       const gasWithBuffer = (estimatedGas! * BigInt(500)) / BigInt(100);
       const tx = await walletClient?.sendTransaction({
         chain: polygonAmoy,
@@ -217,6 +224,7 @@ const WalletProvider = ({ children }: Props) => {
         }),
         value: amount,
         gas: gasWithBuffer,
+        gasPrice,
       });
 
       const receipt = await publicClient?.waitForTransactionReceipt({
@@ -257,6 +265,9 @@ const WalletProvider = ({ children }: Props) => {
         }),
       });
 
+      let gasPrice = await publicClient?.getGasPrice();
+      gasPrice = (gasPrice! * BigInt(300)) / BigInt(100);
+
       const gasWithBuffer = (estimatedGas! * BigInt(500)) / BigInt(100);
 
       const tx = await walletClient?.sendTransaction({
@@ -268,6 +279,7 @@ const WalletProvider = ({ children }: Props) => {
           args: [invoiceId, state],
         }),
         gas: gasWithBuffer,
+        gasPrice,
       });
 
       progressToastId = toast.info("Transaction in progress...", {
@@ -310,7 +322,12 @@ const WalletProvider = ({ children }: Props) => {
           args: [invoiceId],
         }),
       });
+
+      let gasPrice = await publicClient?.getGasPrice();
+      gasPrice = (gasPrice! * BigInt(300)) / BigInt(100);
+
       const gasWithBuffer = (estimatedGas! * BigInt(500)) / BigInt(100);
+
       const tx = await walletClient?.sendTransaction({
         chain: polygonAmoy,
         to: INVOICE_ADDRESS[chainId],
@@ -320,6 +337,7 @@ const WalletProvider = ({ children }: Props) => {
           args: [invoiceId],
         }),
         gas: gasWithBuffer,
+        gasPrice,
       });
 
       progressToastId = toast.info("Transaction in progress...", {
@@ -360,6 +378,9 @@ const WalletProvider = ({ children }: Props) => {
           args: [invoiceId],
         }),
       });
+      let gasPrice = await publicClient?.getGasPrice();
+      gasPrice = (gasPrice! * BigInt(300)) / BigInt(100);
+
       const gasWithBuffer = (estimatedGas! * BigInt(500)) / BigInt(100);
       const tx = await walletClient?.sendTransaction({
         chain: polygonAmoy,
@@ -370,6 +391,7 @@ const WalletProvider = ({ children }: Props) => {
           args: [invoiceId],
         }),
         gas: gasWithBuffer,
+        gasPrice,
       });
 
       progressToastId = toast.info("Transaction in progress...", {
@@ -413,6 +435,10 @@ const WalletProvider = ({ children }: Props) => {
           args: [invoiceId],
         }),
       });
+
+      let gasPrice = await publicClient?.getGasPrice();
+      gasPrice = (gasPrice! * BigInt(300)) / BigInt(100);
+
       const gasWithBuffer = (estimatedGas! * BigInt(500)) / BigInt(100);
 
       const tx = await walletClient?.sendTransaction({
@@ -424,6 +450,7 @@ const WalletProvider = ({ children }: Props) => {
           args: [invoiceId],
         }),
         gas: gasWithBuffer,
+        gasPrice,
       });
 
       progressToastId = toast.info("Transaction in progress...", {
@@ -465,6 +492,9 @@ const WalletProvider = ({ children }: Props) => {
           args: [address],
         }),
       });
+
+      let gasPrice = await publicClient?.getGasPrice();
+      gasPrice = (gasPrice! * BigInt(300)) / BigInt(100);
       const gasWithBuffer = (estimatedGas! * BigInt(500)) / BigInt(100);
 
       const tx = await walletClient?.sendTransaction({
@@ -476,6 +506,7 @@ const WalletProvider = ({ children }: Props) => {
           args: [address],
         }),
         gas: gasWithBuffer,
+        gasPrice,
       });
 
       progressToastId = toast.info("Transaction in progress...", {
@@ -521,6 +552,9 @@ const WalletProvider = ({ children }: Props) => {
           args: [invoiceId, holdPeriod],
         }),
       });
+
+      let gasPrice = await publicClient?.getGasPrice();
+      gasPrice = (gasPrice! * BigInt(300)) / BigInt(100);
       const gasWithBuffer = (estimatedGas! * BigInt(500)) / BigInt(100);
 
       const tx = await walletClient?.sendTransaction({
@@ -532,6 +566,7 @@ const WalletProvider = ({ children }: Props) => {
           args: [invoiceId, holdPeriod],
         }),
         gas: gasWithBuffer,
+        gasPrice,
       });
 
       progressToastId = toast.info("Transaction in progress...", {
@@ -576,6 +611,8 @@ const WalletProvider = ({ children }: Props) => {
         }),
       });
 
+      let gasPrice = await publicClient?.getGasPrice();
+      gasPrice = (gasPrice! * BigInt(300)) / BigInt(100);
       const gasWithBuffer = (estimatedGas! * BigInt(500)) / BigInt(100);
 
       const tx = await walletClient?.sendTransaction({
@@ -587,6 +624,7 @@ const WalletProvider = ({ children }: Props) => {
           args: [newDefaultHoldPeriod],
         }),
         gas: gasWithBuffer,
+        gasPrice,
       });
 
       progressToastId = toast.info("Transaction in progress...", {
@@ -629,6 +667,8 @@ const WalletProvider = ({ children }: Props) => {
         }),
       });
 
+      let gasPrice = await publicClient?.getGasPrice();
+      gasPrice = (gasPrice! * BigInt(300)) / BigInt(100);
       const gasWithBuffer = (estimatedGas! * BigInt(500)) / BigInt(100);
       const tx = await walletClient?.sendTransaction({
         chain: polygonAmoy,
@@ -639,6 +679,7 @@ const WalletProvider = ({ children }: Props) => {
           args: [newFee],
         }),
         gas: gasWithBuffer,
+        gasPrice,
       });
 
       progressToastId = toast.info("Transaction in progress...", {
@@ -680,6 +721,8 @@ const WalletProvider = ({ children }: Props) => {
         }),
       });
 
+      let gasPrice = await publicClient?.getGasPrice();
+      gasPrice = (gasPrice! * BigInt(300)) / BigInt(100);
       const gasWithBuffer = (estimatedGas! * BigInt(500)) / BigInt(100);
       const tx = await walletClient?.sendTransaction({
         chain: polygonAmoy,
@@ -689,6 +732,7 @@ const WalletProvider = ({ children }: Props) => {
           functionName: "withdrawFees",
         }),
         gas: gasWithBuffer,
+        gasPrice,
       });
 
       progressToastId = toast.info("Transaction in progress...", {
