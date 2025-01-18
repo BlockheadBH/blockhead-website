@@ -35,7 +35,9 @@ const columns: ColumnDef<Invoice>[] = [
         </Button>
       );
     },
-    cell: ({ row }) => <div className="bold">{row.getValue("id")}</div>,
+    cell: ({ row }) => (
+      <div className="text-center">{row.getValue("id")}</div>
+    ),
   },
   {
     accessorKey: "createdAt",
@@ -44,30 +46,26 @@ const columns: ColumnDef<Invoice>[] = [
   },
   {
     accessorKey: "paidAt",
-    header: "Time Left",
+    header: () => <div className="text-center">Time Left</div>,
     cell: ({ row }) => {
       const paidAtTimestamp = row.getValue("paidAt");
       const payment = row.original;
 
       // eslint-disable-next-line react-hooks/rules-of-hooks
       const [timeRemaining, setTimeRemaining] = React.useState(() =>
-        payment?.status === "ACCEPTED" || payment?.status === "REJECTED"
-          ? "Action Taken"
-          : timeLeft(paidAtTimestamp)
+        payment?.status === "PAID"
+          ? timeLeft(Number(paidAtTimestamp), 259200000)
+          : "-"
       );
 
       // eslint-disable-next-line react-hooks/rules-of-hooks
       React.useEffect(() => {
-        if (
-          payment?.status === "ACCEPTED" ||
-          payment?.status === "REJECTED" ||
-          !paidAtTimestamp
-        ) {
+        if (payment?.status !== "PAID" || !paidAtTimestamp) {
           return;
         }
 
         const interval = setInterval(() => {
-          const updatedTime = timeLeft(paidAtTimestamp);
+          const updatedTime = timeLeft(paidAtTimestamp, 259200000);
           setTimeRemaining(updatedTime);
 
           if (updatedTime === "Time Elapsed") {
@@ -78,19 +76,52 @@ const columns: ColumnDef<Invoice>[] = [
         return () => clearInterval(interval);
       }, [paidAtTimestamp, payment?.status]);
 
-      return <div className="bold">{timeRemaining}</div>;
+      return <div className="text-center">{timeRemaining}</div>;
+    },
+  },
+  {
+    accessorKey: "holdPeriod",
+    header: () => <div className="text-center">Hold Time</div>,
+    cell: ({ row }) => {
+      const holdTimestamp = row.getValue("holdPeriod");
+      const payment = row.original;
+
+      // eslint-disable-next-line react-hooks/rules-of-hooks
+      const [timeRemaining, setTimeRemaining] = React.useState(() =>
+        payment?.status === "ACCEPTED" ? timeLeft(holdTimestamp) : "-"
+      );
+
+      // eslint-disable-next-line react-hooks/rules-of-hooks
+      React.useEffect(() => {
+        if (payment?.status !== "ACCEPTED" || !holdTimestamp) {
+          return;
+        }
+
+        const interval = setInterval(() => {
+          const updatedTime = timeLeft(holdTimestamp);
+          setTimeRemaining(updatedTime);
+
+          if (updatedTime === "Time Elapsed") {
+            clearInterval(interval);
+          }
+        }, 1000);
+
+        return () => clearInterval(interval);
+      }, [holdTimestamp, payment?.status]);
+
+      return <div className="text-center">{timeRemaining}</div>;
     },
   },
   {
     accessorKey: "status",
     header: "Status",
     cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("status")}</div>
+      <div className="text-center capitalize">{row.getValue("status")}</div>
     ),
   },
   {
     accessorKey: "price",
-    header: () => <div className="text-right">Amount</div>,
+    header: () => <div className="text-center">Amount</div>,
     cell: ({ row }) => {
       return (
         <div className="text-right font-medium">
@@ -101,11 +132,11 @@ const columns: ColumnDef<Invoice>[] = [
   },
   {
     accessorKey: "amountPaid",
-    header: () => <div className="text-right">Paid Amount</div>,
+    header: () => <div className="text-center">Paid Amount</div>,
     cell: ({ row }) => {
       const payment = row.original;
       return (
-        <div className="text-right font-medium">
+        <div className="text-center font-medium">
           {payment.amountPaid
             ? row.getValue("amountPaid") + " POL"
             : "Not paid"}

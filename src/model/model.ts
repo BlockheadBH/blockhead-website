@@ -6,6 +6,7 @@ export type Invoice = {
   price?: string | null;
   status?: string;
   type?: "Payer" | "Creator";
+  holdPeriod?: string | null;
 };
 
 export interface UserCreatedInvoice extends Invoice {

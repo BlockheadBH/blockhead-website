@@ -33,6 +33,7 @@ const invoiceQuery = `query ($address: String!) {
         paidAt
         price
         status
+        holdPeriod
       }
       paidInvoices {
         amountPaid
@@ -41,6 +42,7 @@ const invoiceQuery = `query ($address: String!) {
         paidAt
         price
         status
+        holdPeriod
       }
   }
 }`;
@@ -113,6 +115,7 @@ const WalletProvider = ({ children }: Props) => {
             ? formatEther(invoice.amountPaid)
             : null,
           type: "Creator",
+          holdPeriod: invoice.holdPeriod,
         })
       );
 
@@ -129,6 +132,7 @@ const WalletProvider = ({ children }: Props) => {
             ? formatEther(invoice.amountPaid)
             : null,
           type: "Payer",
+          holdPeriod: invoice.holdPeriod,
         })
       );
 
