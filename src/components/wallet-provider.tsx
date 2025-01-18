@@ -233,6 +233,7 @@ const WalletProvider = ({ children }: Props) => {
 
       if (receipt?.status === "success") {
         toast.success("Invoice Payment Successful");
+        await getInvoiceData();
         success = true;
       } else {
         toast.error("Transaction failed. Please try again.");

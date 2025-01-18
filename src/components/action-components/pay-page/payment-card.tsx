@@ -14,7 +14,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ContractContext } from "@/context/contract-context";
-import { Loader2 } from "lucide-react";
+import { CircleCheckBig, Loader2 } from "lucide-react";
 import { useContext, useState } from "react";
 import { ConnectKitButton } from "connectkit";
 import { PaymentCardProps } from "@/model/model";
@@ -22,8 +22,10 @@ import { formatEther, parseEther } from "viem";
 import {
   Dialog,
   DialogContent,
-  DialogHeader,
   DialogTitle,
+  DialogDescription,
+  DialogOverlay,
+  DialogPortal,
 } from "@/components/ui/dialog";
 
 const PaymentCard = ({ data }: PaymentCardProps) => {
@@ -75,6 +77,7 @@ const PaymentCard = ({ data }: PaymentCardProps) => {
               <Label htmlFor="amount">Payer Amount</Label>
               <Input
                 id="amount"
+                type="number"
                 value={amount}
                 placeholder={`amount > ${formatedFee} and ≤ ${
                   data?.price || "N/A"
@@ -119,22 +122,35 @@ const PaymentCard = ({ data }: PaymentCardProps) => {
       </Card>
 
       <Dialog open={open} onOpenChange={() => {}}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Payment Successful</DialogTitle>
-          </DialogHeader>
-          <div className="flex flex-col items-center gap-4 mt-4">
-            <p>Your payment has been successfully processed.</p>
-            <Button
-              onClick={() => {
-                setOpen(false);
-                router.push("/dashboard");
-              }}
-            >
-              Go to Dashboard
-            </Button>
-          </div>
-        </DialogContent>
+        <DialogPortal>
+          <DialogOverlay className="fixed inset-0 bg-black/50" />
+          <DialogContent className="fixed left-1/2  top-1/2 w-full max-w-md -translate-x-1/2 -translate-y-1/2 rounded-md p-8 text-gray-900 shadow bg-white">
+            <DialogTitle className="text-xl font-bold">
+              Payment Successful
+            </DialogTitle>
+            <DialogDescription></DialogDescription>
+            <div className="flex flex-col items-center gap-4 mt-8">
+              <p className="items-center">
+                <CircleCheckBig
+                  size={100}
+                  color="#3baa2c"
+                  strokeWidth={3}
+                  absoluteStrokeWidth
+                  className="circle-check-animate"
+                />
+              </p>
+              <p>Your payment has been successfully processed.</p>
+              <Button
+                onClick={() => {
+                  setOpen(false);
+                  router.push("/dashboard");
+                }}
+              >
+                Go to Dashboard
+              </Button>
+            </div>
+          </DialogContent>
+        </DialogPortal>
       </Dialog>
     </>
   );
