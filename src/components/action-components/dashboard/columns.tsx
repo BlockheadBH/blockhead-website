@@ -124,7 +124,7 @@ const columns: ColumnDef<Invoice>[] = [
     header: () => <div className="text-center">Amount</div>,
     cell: ({ row }) => {
       return (
-        <div className="text-right font-medium">
+        <div className="text-center">
           {row.getValue("price") + " POL"}
         </div>
       );
@@ -136,7 +136,7 @@ const columns: ColumnDef<Invoice>[] = [
     cell: ({ row }) => {
       const payment = row.original;
       return (
-        <div className="text-center font-medium">
+        <div className="text-center">
           {payment.amountPaid
             ? row.getValue("amountPaid") + " POL"
             : "Not paid"}
