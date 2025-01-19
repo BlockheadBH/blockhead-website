@@ -29,6 +29,7 @@ const AdminCard = () => {
   const { data: feeReceiver } = useGetFeeReceiver();
 
   const [receiverAdd, setReceiverAdd] = useState("");
+  const [ownerAddr, setOwnerAddr] = useState("");
   const [invoiceId, setInvoiceId] = useState("");
   const [holdPeriod, setHoldPeriod] = useState("");
   const [defaultPeriod, setDefaultPeriod] = useState("");
@@ -40,11 +41,16 @@ const AdminCard = () => {
     setDefaultHoldPeriod,
     withdrawFees,
     setFee,
+    transferOwnership,
     isLoading,
   } = useContext(ContractContext);
 
   const handleReceiverAdd = async () => {
     await setFeeReceiversAddress(receiverAdd as Address);
+  };
+
+  const handleOwnerAddr = async () => {
+    await transferOwnership(ownerAddr as Address);
   };
 
   const handleInvoiceHoldPeriod = async () => {
@@ -121,6 +127,31 @@ const AdminCard = () => {
       </CardHeader>
       <CardContent>
         <div className="grid w-full items-center gap-4">
+          <div className="my-3 space-y-1.5">
+            <Label htmlFor="setFeeAdd">Set New Admin</Label>
+            <div className="flex flex-col-2 gap-2">
+              <Input
+                id="setFeeAdd"
+                placeholder="0xxxxx"
+                value={ownerAddr}
+                onChange={(e) => setOwnerAddr(e.target.value)}
+              />
+              <Button onClick={handleOwnerAddr}>
+                {isLoading === "setFeeReceiversAddress" ? (
+                  <Loader2
+                    className="inline-flex animate-spin"
+                    size={10}
+                    color="#cee7d6"
+                  />
+                ) : (
+                  "SET"
+                )}
+              </Button>
+            </div>
+            <p className="text-sm text-muted-foreground">
+              Updates the admin of the fee receiver.
+            </p>
+          </div>
           <div className="my-3 space-y-1.5">
             <Label htmlFor="setFeeAdd">Set Fee receivers address</Label>
             <div className="flex flex-col-2 gap-2">

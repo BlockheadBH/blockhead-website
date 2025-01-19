@@ -482,6 +482,63 @@ const WalletProvider = ({ children }: Props) => {
     return success;
   };
 
+  const transferOwnership = async (address: Address): Promise<boolean> => {
+    setIsLoading("transferOwnership");
+
+    let success = false;
+    let progressToastId;
+    try {
+      const estimatedGas = await publicClient?.estimateGas({
+        account: walletClient?.account,
+        to: INVOICE_ADDRESS[chainId],
+        data: encodeFunctionData({
+          abi: PaymentProcessor__factory.abi,
+          functionName: "transferOwnership",
+          args: [address],
+        }),
+      });
+
+      let gasPrice = await publicClient?.getGasPrice();
+      gasPrice = (gasPrice! * BigInt(300)) / BigInt(100);
+      const gasWithBuffer = (estimatedGas! * BigInt(500)) / BigInt(100);
+
+      const tx = await walletClient?.sendTransaction({
+        chain: polygonAmoy,
+        to: INVOICE_ADDRESS[chainId],
+        data: encodeFunctionData({
+          abi: PaymentProcessor__factory.abi,
+          functionName: "transferOwnership",
+          args: [address],
+        }),
+        gas: gasWithBuffer,
+        gasPrice,
+      });
+
+      progressToastId = toast.info("Transaction in progress...", {
+        duration: Infinity,
+      });
+
+      const receipt = await publicClient?.waitForTransactionReceipt({
+        hash: tx!,
+      });
+
+      if (receipt?.status) {
+        toast.dismiss(progressToastId);
+        toast.success("New Admin updated successfully");
+        await getInvoiceData();
+        success = true;
+      } else {
+        toast.dismiss(progressToastId);
+        toast.error("Failed to update Admin. Please try again.");
+      }
+    } catch (error) {
+      toast.dismiss(progressToastId);
+      getError(error);
+    }
+    setIsLoading("");
+    return success;
+  };
+
   const setFeeReceiversAddress = async (address: Address): Promise<boolean> => {
     setIsLoading("setFeeReceiversAddress");
 
@@ -778,6 +835,7 @@ const WalletProvider = ({ children }: Props) => {
         setFeeReceiversAddress,
         setInvoiceHoldPeriod,
         setDefaultHoldPeriod,
+        transferOwnership,
         setFee,
         withdrawFees,
         refetchInvoiceData: async () => {

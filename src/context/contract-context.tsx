@@ -12,6 +12,7 @@ export interface ContractContextData {
   releaseInvoice: (invoiceId: bigint) => Promise<boolean>;
   refundPayerAfterWindow: (invoiceId: bigint) => Promise<boolean>;
   setFeeReceiversAddress: (address: Address) => Promise<boolean>;
+  transferOwnership: (address: Address) => Promise<boolean>;
   setInvoiceHoldPeriod: (
     invoiceId: bigint,
     holdPeriod: number
@@ -24,6 +25,7 @@ export interface ContractContextData {
 export const contractContextDefaults: ContractContextData = {
   isLoading: undefined,
   invoiceData: [],
+  transferOwnership: async () => Promise.resolve(false),
   createInvoice: async () => Promise.resolve(false),
   makeInvoicePayment: async () => Promise.resolve(false),
   creatorsAction: async () => Promise.resolve(false),
