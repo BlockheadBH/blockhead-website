@@ -13,14 +13,20 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ContractContext } from "@/context/contract-context";
 import { Loader2 } from "lucide-react";
-import { parseEther } from "ethers";
+import { formatEther, parseEther } from "ethers";
 import { useAccount } from "wagmi";
 import { useGetOwner } from "@/hooks/useGetOwner";
+import { useGetFeeReceiver } from "@/hooks/useGetFeeReceiver";
 import { Address } from "viem";
+import { useGetFee } from "@/hooks/useGetFee";
 
 const AdminCard = () => {
   const { address } = useAccount();
-  const { data: allowedAddress } = useGetOwner();
+  const { data: allowedAddress, isLoading: isAllowedAddressLoading } =
+    useGetOwner();
+  const { data: fee } = useGetFee();
+
+  const { data: feeReceiver } = useGetFeeReceiver();
 
   const [receiverAdd, setReceiverAdd] = useState("");
   const [invoiceId, setInvoiceId] = useState("");
@@ -61,6 +67,19 @@ const AdminCard = () => {
     await withdrawFees();
   };
 
+  if (isAllowedAddressLoading) {
+    return (
+      <Card className="w-[450px] flex items-center justify-center">
+        <Loader2
+          className="inline-flex animate-spin"
+          size={40}
+          color="#4CAF50"
+        />
+        <p className="text-muted-foreground mt-4">Loading...</p>
+      </Card>
+    );
+  }
+
   if (address !== allowedAddress) {
     return (
       <Card className="w-[450px]">
@@ -81,6 +100,24 @@ const AdminCard = () => {
         <CardDescription>
           *Only permitted address are allowed to see this page*
         </CardDescription>
+        <div className="mt-4 bg-muted p-3 rounded">
+          <p className="text-sm font-medium">
+            <span className="text-muted-foreground">
+              Current Fee Receiver:{" "}
+            </span>
+            <span className="font-mono text-primary">
+              {feeReceiver
+                ? `${feeReceiver.slice(0, 8)}...${feeReceiver.slice(-6)}`
+                : "Loading..."}
+            </span>
+          </p>
+          <p className="text-sm font-medium mt-2">
+            <span className="text-muted-foreground">Current Fee: </span>
+            <span className="font-mono text-primary">
+              {fee ? formatEther(fee!) + " POL" : "Loading..."}
+            </span>
+          </p>
+        </div>
       </CardHeader>
       <CardContent>
         <div className="grid w-full items-center gap-4">
@@ -89,7 +126,7 @@ const AdminCard = () => {
             <div className="flex flex-col-2 gap-2">
               <Input
                 id="setFeeAdd"
-                placeholder="0xxxxxxxx"
+                placeholder="0xxxxx"
                 value={receiverAdd}
                 onChange={(e) => setReceiverAdd(e.target.value)}
               />
@@ -122,7 +159,7 @@ const AdminCard = () => {
               />
               <Input
                 id="invoicePeriod"
-                placeholder="in (Days) ..."
+                placeholder="In Days"
                 type="number"
                 value={holdPeriod}
                 onChange={(e) => setHoldPeriod(e.target.value)}
@@ -150,7 +187,7 @@ const AdminCard = () => {
               <Input
                 id="defaulthold"
                 type="number"
-                placeholder="in (Days) ..."
+                placeholder="In Days"
                 value={defaultPeriod}
                 onChange={(e) => setDefaultPeriod(e.target.value)}
               />

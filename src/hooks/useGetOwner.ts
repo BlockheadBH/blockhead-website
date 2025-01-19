@@ -17,3 +17,4 @@ export const useGetOwner = () => {
 
   return { data, refetch, isLoading };
 };
+
