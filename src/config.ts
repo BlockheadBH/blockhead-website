@@ -13,8 +13,7 @@ const config = createConfig(
       ]),
     },
     appName: "BlockHead Invoice",
-    walletConnectProjectId: "42cba5131fe1c9722463e9113837bb9a",
-    ssr: true,
+    walletConnectProjectId: walletConnectId,
   })
 );
 export default config;
