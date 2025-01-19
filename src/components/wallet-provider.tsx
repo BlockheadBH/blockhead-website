@@ -242,7 +242,6 @@ const WalletProvider = ({ children }: Props) => {
     try {
       let gasPrice = await publicClient?.getGasPrice();
       gasPrice = (gasPrice! * BigInt(300)) / BigInt(100);
-      s;
 
       const tx = await walletClient?.sendTransaction({
         chain: polygonAmoy,
