@@ -44,7 +44,7 @@ const columns: ColumnDef<Invoice>[] = [
   },
   {
     accessorKey: "paidAt",
-    header: () => <div className="text-center">Time Left</div>,
+    header: () => <div className="text-center">Decision Window</div>,
     cell: ({ row }) => {
       const paidAtTimestamp = row.getValue("paidAt");
       const payment = row.original;

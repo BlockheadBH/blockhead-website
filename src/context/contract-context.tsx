@@ -5,7 +5,7 @@ import { Address } from "viem";
 export interface ContractContextData {
   isLoading: string | undefined;
   invoiceData: Invoice[];
-  createInvoice: (invoicePrice: bigint) => Promise<boolean>;
+  createInvoice: (invoicePrice: bigint) => Promise<number>;
   makeInvoicePayment: (amount: bigint, invoiceId: bigint) => Promise<boolean>;
   creatorsAction: (invoiceId: bigint, state: boolean) => Promise<boolean>;
   cancelInvoice: (invoiceId: bigint) => Promise<boolean>;

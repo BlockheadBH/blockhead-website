@@ -22,11 +22,17 @@ import { CirclePlus, Loader2 } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
 import { toast } from "sonner";
 import generateSecureLink from "@/lib/generate-link";
+import { Invoice } from "@/model/model";
+// import { useGetNextInvoiceId } from "@/hooks/useGetNextInvoiceId";
+
+let price: string;
+let id: string;
 
 const CreateInvoiceDialog = () => {
+  const [amount, setAmount] = useState("");
   const { address } = useAccount();
   const { data } = useGetFee();
-  const [amount, setAmount] = useState("");
+
   const [openCreate, setOpenCreate] = useState<boolean>(false);
   const [open, setOpen] = useState<boolean>(false);
   const { createInvoice, refetchInvoiceData, isLoading } =
@@ -35,8 +41,11 @@ const CreateInvoiceDialog = () => {
   const handleClick = async () => {
     const amountValue = parseUnits(amount, 18);
     const success = await createInvoice(amountValue);
+
     setOpenCreate(false);
     if (success) {
+      id = success.toString();
+      price = amount;
       refetchInvoiceData?.();
       setOpen(true);
     }
@@ -112,11 +121,12 @@ interface InvoiceQRLinkProps {
 
 export const InvoiceQRLink = ({ open, setOpen }: InvoiceQRLinkProps) => {
   const domain = typeof window !== "undefined" ? window.location.origin : "";
-  const { invoiceData } = useContext(ContractContext);
 
-  const highestIdInvoice = invoiceData.reduce((highest, current) => {
-    return parseInt(current.id) > parseInt(highest.id) ? current : highest;
-  }, invoiceData[0]);
+  const highestIdInvoice: Invoice = {
+    id: id!,
+    price,
+    status: "CREATED",
+  };
 
   const encodedEncryptedData = generateSecureLink(highestIdInvoice);
 

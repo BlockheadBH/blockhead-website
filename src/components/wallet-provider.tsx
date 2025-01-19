@@ -147,25 +147,14 @@ const WalletProvider = ({ children }: Props) => {
     }
   };
 
-  const createInvoice = async (invoicePrice: bigint): Promise<boolean> => {
+  const createInvoice = async (invoicePrice: bigint): Promise<number> => {
     setIsLoading("createInvoice");
 
-    let success = false;
+    let id = 0;
     try {
-      const estimatedGas = await publicClient?.estimateGas({
-        account: walletClient?.account,
-        to: INVOICE_ADDRESS[chainId],
-        data: encodeFunctionData({
-          abi: PaymentProcessor__factory.abi,
-          functionName: "createInvoice",
-          args: [invoicePrice],
-        }),
-      });
-
       let gasPrice = await publicClient?.getGasPrice();
       gasPrice = (gasPrice! * BigInt(300)) / BigInt(100);
 
-      const gasWithBuffer = (estimatedGas! * BigInt(500)) / BigInt(100);
       const tx = await walletClient?.sendTransaction({
         chain: polygonAmoy,
         to: INVOICE_ADDRESS[chainId],
@@ -174,17 +163,21 @@ const WalletProvider = ({ children }: Props) => {
           functionName: "createInvoice",
           args: [invoicePrice],
         }),
-        gas: gasWithBuffer,
+
         gasPrice,
       });
 
       const receipt = await publicClient?.waitForTransactionReceipt({
         hash: tx!,
       });
+
+      const hexId = receipt?.logs[0].topics[1];
+
+      id = parseInt(hexId!, 16);
+      console.log(receipt);
       if (receipt?.status) {
         toast.success("Invoice successfully created");
         await getInvoiceData();
-        success = true;
       } else {
         toast.error("Error creating invoice, Please try again.");
       }
@@ -192,7 +185,7 @@ const WalletProvider = ({ children }: Props) => {
       getError(error);
     }
     setIsLoading("");
-    return success;
+    return id;
   };
 
   const makeInvoicePayment = async (
@@ -203,21 +196,9 @@ const WalletProvider = ({ children }: Props) => {
 
     let success = false;
     try {
-      const estimatedGas = await publicClient?.estimateGas({
-        account: walletClient?.account,
-        to: INVOICE_ADDRESS[chainId],
-        data: encodeFunctionData({
-          abi: PaymentProcessor__factory.abi,
-          functionName: "makeInvoicePayment",
-          args: [invoiceId],
-        }),
-        value: amount,
-      });
-
       let gasPrice = await publicClient?.getGasPrice();
       gasPrice = (gasPrice! * BigInt(300)) / BigInt(100);
 
-      const gasWithBuffer = (estimatedGas! * BigInt(500)) / BigInt(100);
       const tx = await walletClient?.sendTransaction({
         chain: polygonAmoy,
         to: INVOICE_ADDRESS[chainId],
@@ -227,7 +208,6 @@ const WalletProvider = ({ children }: Props) => {
           args: [invoiceId],
         }),
         value: amount,
-        gas: gasWithBuffer,
         gasPrice,
       });
 
@@ -260,20 +240,9 @@ const WalletProvider = ({ children }: Props) => {
     let progressToastId;
 
     try {
-      const estimatedGas = await publicClient?.estimateGas({
-        account: walletClient?.account,
-        to: INVOICE_ADDRESS[chainId],
-        data: encodeFunctionData({
-          abi: PaymentProcessor__factory.abi,
-          functionName: "creatorsAction",
-          args: [invoiceId, state],
-        }),
-      });
-
       let gasPrice = await publicClient?.getGasPrice();
       gasPrice = (gasPrice! * BigInt(300)) / BigInt(100);
-
-      const gasWithBuffer = (estimatedGas! * BigInt(500)) / BigInt(100);
+      s;
 
       const tx = await walletClient?.sendTransaction({
         chain: polygonAmoy,
@@ -283,7 +252,6 @@ const WalletProvider = ({ children }: Props) => {
           functionName: "creatorsAction",
           args: [invoiceId, state],
         }),
-        gas: gasWithBuffer,
         gasPrice,
       });
 
@@ -318,20 +286,8 @@ const WalletProvider = ({ children }: Props) => {
     let success = false;
     let progressToastId;
     try {
-      const estimatedGas = await publicClient?.estimateGas({
-        account: walletClient?.account,
-        to: INVOICE_ADDRESS[chainId],
-        data: encodeFunctionData({
-          abi: PaymentProcessor__factory.abi,
-          functionName: "cancelInvoice",
-          args: [invoiceId],
-        }),
-      });
-
       let gasPrice = await publicClient?.getGasPrice();
       gasPrice = (gasPrice! * BigInt(300)) / BigInt(100);
-
-      const gasWithBuffer = (estimatedGas! * BigInt(500)) / BigInt(100);
 
       const tx = await walletClient?.sendTransaction({
         chain: polygonAmoy,
@@ -341,7 +297,7 @@ const WalletProvider = ({ children }: Props) => {
           functionName: "cancelInvoice",
           args: [invoiceId],
         }),
-        gas: gasWithBuffer,
+
         gasPrice,
       });
 
@@ -374,19 +330,9 @@ const WalletProvider = ({ children }: Props) => {
     let success = false;
     let progressToastId;
     try {
-      const estimatedGas = await publicClient?.estimateGas({
-        account: walletClient?.account,
-        to: INVOICE_ADDRESS[chainId],
-        data: encodeFunctionData({
-          abi: PaymentProcessor__factory.abi,
-          functionName: "releaseInvoice",
-          args: [invoiceId],
-        }),
-      });
       let gasPrice = await publicClient?.getGasPrice();
       gasPrice = (gasPrice! * BigInt(300)) / BigInt(100);
 
-      const gasWithBuffer = (estimatedGas! * BigInt(500)) / BigInt(100);
       const tx = await walletClient?.sendTransaction({
         chain: polygonAmoy,
         to: INVOICE_ADDRESS[chainId],
@@ -395,7 +341,7 @@ const WalletProvider = ({ children }: Props) => {
           functionName: "releaseInvoice",
           args: [invoiceId],
         }),
-        gas: gasWithBuffer,
+
         gasPrice,
       });
 
@@ -431,20 +377,8 @@ const WalletProvider = ({ children }: Props) => {
     let success = false;
     let progressToastId;
     try {
-      const estimatedGas = await publicClient?.estimateGas({
-        account: walletClient?.account,
-        to: INVOICE_ADDRESS[chainId],
-        data: encodeFunctionData({
-          abi: PaymentProcessor__factory.abi,
-          functionName: "refundPayerAfterWindow",
-          args: [invoiceId],
-        }),
-      });
-
       let gasPrice = await publicClient?.getGasPrice();
       gasPrice = (gasPrice! * BigInt(300)) / BigInt(100);
-
-      const gasWithBuffer = (estimatedGas! * BigInt(500)) / BigInt(100);
 
       const tx = await walletClient?.sendTransaction({
         chain: polygonAmoy,
@@ -454,7 +388,6 @@ const WalletProvider = ({ children }: Props) => {
           functionName: "refundPayerAfterWindow",
           args: [invoiceId],
         }),
-        gas: gasWithBuffer,
         gasPrice,
       });
 
@@ -488,19 +421,8 @@ const WalletProvider = ({ children }: Props) => {
     let success = false;
     let progressToastId;
     try {
-      const estimatedGas = await publicClient?.estimateGas({
-        account: walletClient?.account,
-        to: INVOICE_ADDRESS[chainId],
-        data: encodeFunctionData({
-          abi: PaymentProcessor__factory.abi,
-          functionName: "transferOwnership",
-          args: [address],
-        }),
-      });
-
       let gasPrice = await publicClient?.getGasPrice();
       gasPrice = (gasPrice! * BigInt(300)) / BigInt(100);
-      const gasWithBuffer = (estimatedGas! * BigInt(500)) / BigInt(100);
 
       const tx = await walletClient?.sendTransaction({
         chain: polygonAmoy,
@@ -510,7 +432,6 @@ const WalletProvider = ({ children }: Props) => {
           functionName: "transferOwnership",
           args: [address],
         }),
-        gas: gasWithBuffer,
         gasPrice,
       });
 
@@ -545,19 +466,8 @@ const WalletProvider = ({ children }: Props) => {
     let success = false;
     let progressToastId;
     try {
-      const estimatedGas = await publicClient?.estimateGas({
-        account: walletClient?.account,
-        to: INVOICE_ADDRESS[chainId],
-        data: encodeFunctionData({
-          abi: PaymentProcessor__factory.abi,
-          functionName: "setFeeReceiversAddress",
-          args: [address],
-        }),
-      });
-
       let gasPrice = await publicClient?.getGasPrice();
       gasPrice = (gasPrice! * BigInt(300)) / BigInt(100);
-      const gasWithBuffer = (estimatedGas! * BigInt(500)) / BigInt(100);
 
       const tx = await walletClient?.sendTransaction({
         chain: polygonAmoy,
@@ -567,7 +477,6 @@ const WalletProvider = ({ children }: Props) => {
           functionName: "setFeeReceiversAddress",
           args: [address],
         }),
-        gas: gasWithBuffer,
         gasPrice,
       });
 
@@ -605,19 +514,8 @@ const WalletProvider = ({ children }: Props) => {
     let success = false;
     let progressToastId;
     try {
-      const estimatedGas = await publicClient?.estimateGas({
-        account: walletClient?.account,
-        to: INVOICE_ADDRESS[chainId],
-        data: encodeFunctionData({
-          abi: PaymentProcessor__factory.abi,
-          functionName: "setInvoiceHoldPeriod",
-          args: [invoiceId, holdPeriod],
-        }),
-      });
-
       let gasPrice = await publicClient?.getGasPrice();
       gasPrice = (gasPrice! * BigInt(300)) / BigInt(100);
-      const gasWithBuffer = (estimatedGas! * BigInt(500)) / BigInt(100);
 
       const tx = await walletClient?.sendTransaction({
         chain: polygonAmoy,
@@ -627,7 +525,6 @@ const WalletProvider = ({ children }: Props) => {
           functionName: "setInvoiceHoldPeriod",
           args: [invoiceId, holdPeriod],
         }),
-        gas: gasWithBuffer,
         gasPrice,
       });
 
@@ -663,19 +560,8 @@ const WalletProvider = ({ children }: Props) => {
     let success = false;
     let progressToastId;
     try {
-      const estimatedGas = await publicClient?.estimateGas({
-        account: walletClient?.account,
-        to: INVOICE_ADDRESS[chainId],
-        data: encodeFunctionData({
-          abi: PaymentProcessor__factory.abi,
-          functionName: "setDefaultHoldPeriod",
-          args: [newDefaultHoldPeriod],
-        }),
-      });
-
       let gasPrice = await publicClient?.getGasPrice();
       gasPrice = (gasPrice! * BigInt(300)) / BigInt(100);
-      const gasWithBuffer = (estimatedGas! * BigInt(500)) / BigInt(100);
 
       const tx = await walletClient?.sendTransaction({
         chain: polygonAmoy,
@@ -685,7 +571,6 @@ const WalletProvider = ({ children }: Props) => {
           functionName: "setDefaultHoldPeriod",
           args: [newDefaultHoldPeriod],
         }),
-        gas: gasWithBuffer,
         gasPrice,
       });
 
@@ -719,19 +604,9 @@ const WalletProvider = ({ children }: Props) => {
     let success = false;
     let progressToastId;
     try {
-      const estimatedGas = await publicClient?.estimateGas({
-        account: walletClient?.account,
-        to: INVOICE_ADDRESS[chainId],
-        data: encodeFunctionData({
-          abi: PaymentProcessor__factory.abi,
-          functionName: "setFee",
-          args: [newFee],
-        }),
-      });
-
       let gasPrice = await publicClient?.getGasPrice();
       gasPrice = (gasPrice! * BigInt(300)) / BigInt(100);
-      const gasWithBuffer = (estimatedGas! * BigInt(500)) / BigInt(100);
+
       const tx = await walletClient?.sendTransaction({
         chain: polygonAmoy,
         to: INVOICE_ADDRESS[chainId],
@@ -740,7 +615,7 @@ const WalletProvider = ({ children }: Props) => {
           functionName: "setFee",
           args: [newFee],
         }),
-        gas: gasWithBuffer,
+
         gasPrice,
       });
 
@@ -774,18 +649,8 @@ const WalletProvider = ({ children }: Props) => {
     let success = false;
     let progressToastId;
     try {
-      const estimatedGas = await publicClient?.estimateGas({
-        account: walletClient?.account,
-        to: INVOICE_ADDRESS[chainId],
-        data: encodeFunctionData({
-          abi: PaymentProcessor__factory.abi,
-          functionName: "withdrawFees",
-        }),
-      });
-
       let gasPrice = await publicClient?.getGasPrice();
       gasPrice = (gasPrice! * BigInt(300)) / BigInt(100);
-      const gasWithBuffer = (estimatedGas! * BigInt(500)) / BigInt(100);
       const tx = await walletClient?.sendTransaction({
         chain: polygonAmoy,
         to: INVOICE_ADDRESS[chainId],
@@ -793,7 +658,6 @@ const WalletProvider = ({ children }: Props) => {
           abi: PaymentProcessor__factory.abi,
           functionName: "withdrawFees",
         }),
-        gas: gasWithBuffer,
         gasPrice,
       });
 
