@@ -26,7 +26,7 @@ export const contractContextDefaults: ContractContextData = {
   isLoading: undefined,
   invoiceData: [],
   transferOwnership: async () => Promise.resolve(false),
-  createInvoice: async () => Promise.resolve(false),
+  createInvoice: async () => Promise.resolve(0),
   makeInvoicePayment: async () => Promise.resolve(false),
   creatorsAction: async () => Promise.resolve(false),
   cancelInvoice: async () => Promise.resolve(false),
