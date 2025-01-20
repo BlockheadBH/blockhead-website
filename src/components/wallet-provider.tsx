@@ -47,6 +47,11 @@ const invoiceQuery = `query ($address: String!) {
   }
 }`;
 
+const fetchGasPrice = async (publicClient: any): Promise<bigint> => {
+  const gasPrice = await publicClient?.getGasPrice();
+  return (gasPrice * BigInt(300)) / BigInt(100);
+};
+
 const WalletProvider = ({ children }: Props) => {
   const { chain, address } = useAccount();
   const chainId = !chain ? POLYGON_AMOY : chain?.id;
@@ -152,9 +157,7 @@ const WalletProvider = ({ children }: Props) => {
 
     let id = 0;
     try {
-      let gasPrice = await publicClient?.getGasPrice();
-      gasPrice = (gasPrice! * BigInt(300)) / BigInt(100);
-
+      const gasPrice = await fetchGasPrice(publicClient);
       const tx = await walletClient?.sendTransaction({
         chain: polygonAmoy,
         to: INVOICE_ADDRESS[chainId],
@@ -196,8 +199,7 @@ const WalletProvider = ({ children }: Props) => {
 
     let success = false;
     try {
-      let gasPrice = await publicClient?.getGasPrice();
-      gasPrice = (gasPrice! * BigInt(300)) / BigInt(100);
+      const gasPrice = await fetchGasPrice(publicClient);
 
       const tx = await walletClient?.sendTransaction({
         chain: polygonAmoy,
@@ -240,8 +242,7 @@ const WalletProvider = ({ children }: Props) => {
     let progressToastId;
 
     try {
-      let gasPrice = await publicClient?.getGasPrice();
-      gasPrice = (gasPrice! * BigInt(300)) / BigInt(100);
+      const gasPrice = await fetchGasPrice(publicClient);
 
       const tx = await walletClient?.sendTransaction({
         chain: polygonAmoy,
@@ -285,8 +286,7 @@ const WalletProvider = ({ children }: Props) => {
     let success = false;
     let progressToastId;
     try {
-      let gasPrice = await publicClient?.getGasPrice();
-      gasPrice = (gasPrice! * BigInt(300)) / BigInt(100);
+      const gasPrice = await fetchGasPrice(publicClient);
 
       const tx = await walletClient?.sendTransaction({
         chain: polygonAmoy,
@@ -329,8 +329,7 @@ const WalletProvider = ({ children }: Props) => {
     let success = false;
     let progressToastId;
     try {
-      let gasPrice = await publicClient?.getGasPrice();
-      gasPrice = (gasPrice! * BigInt(300)) / BigInt(100);
+      const gasPrice = await fetchGasPrice(publicClient);
 
       const tx = await walletClient?.sendTransaction({
         chain: polygonAmoy,
@@ -376,8 +375,7 @@ const WalletProvider = ({ children }: Props) => {
     let success = false;
     let progressToastId;
     try {
-      let gasPrice = await publicClient?.getGasPrice();
-      gasPrice = (gasPrice! * BigInt(300)) / BigInt(100);
+      const gasPrice = await fetchGasPrice(publicClient);
 
       const tx = await walletClient?.sendTransaction({
         chain: polygonAmoy,
@@ -420,9 +418,7 @@ const WalletProvider = ({ children }: Props) => {
     let success = false;
     let progressToastId;
     try {
-      let gasPrice = await publicClient?.getGasPrice();
-      gasPrice = (gasPrice! * BigInt(300)) / BigInt(100);
-
+      const gasPrice = await fetchGasPrice(publicClient);
       const tx = await walletClient?.sendTransaction({
         chain: polygonAmoy,
         to: INVOICE_ADDRESS[chainId],
@@ -465,8 +461,7 @@ const WalletProvider = ({ children }: Props) => {
     let success = false;
     let progressToastId;
     try {
-      let gasPrice = await publicClient?.getGasPrice();
-      gasPrice = (gasPrice! * BigInt(300)) / BigInt(100);
+      const gasPrice = await fetchGasPrice(publicClient);
 
       const tx = await walletClient?.sendTransaction({
         chain: polygonAmoy,
@@ -513,8 +508,7 @@ const WalletProvider = ({ children }: Props) => {
     let success = false;
     let progressToastId;
     try {
-      let gasPrice = await publicClient?.getGasPrice();
-      gasPrice = (gasPrice! * BigInt(300)) / BigInt(100);
+      const gasPrice = await fetchGasPrice(publicClient);
 
       const tx = await walletClient?.sendTransaction({
         chain: polygonAmoy,
@@ -559,9 +553,7 @@ const WalletProvider = ({ children }: Props) => {
     let success = false;
     let progressToastId;
     try {
-      let gasPrice = await publicClient?.getGasPrice();
-      gasPrice = (gasPrice! * BigInt(300)) / BigInt(100);
-
+      const gasPrice = await fetchGasPrice(publicClient);
       const tx = await walletClient?.sendTransaction({
         chain: polygonAmoy,
         to: INVOICE_ADDRESS[chainId],
@@ -603,8 +595,7 @@ const WalletProvider = ({ children }: Props) => {
     let success = false;
     let progressToastId;
     try {
-      let gasPrice = await publicClient?.getGasPrice();
-      gasPrice = (gasPrice! * BigInt(300)) / BigInt(100);
+      const gasPrice = await fetchGasPrice(publicClient);
 
       const tx = await walletClient?.sendTransaction({
         chain: polygonAmoy,
@@ -648,8 +639,7 @@ const WalletProvider = ({ children }: Props) => {
     let success = false;
     let progressToastId;
     try {
-      let gasPrice = await publicClient?.getGasPrice();
-      gasPrice = (gasPrice! * BigInt(300)) / BigInt(100);
+      const gasPrice = await fetchGasPrice(publicClient);
       const tx = await walletClient?.sendTransaction({
         chain: polygonAmoy,
         to: INVOICE_ADDRESS[chainId],
