@@ -143,6 +143,9 @@ const columns: ColumnDef<Invoice>[] = [
   {
     id: "actions",
     cell: ({ row }) => {
+      const paidAtTimestamp = row.getValue("paidAt");
+      const t = timeLeft(Number(paidAtTimestamp), 259200000);
+
       const payment = row.original;
       return (
         <DropdownMenu>
@@ -154,47 +157,51 @@ const columns: ColumnDef<Invoice>[] = [
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            {payment.type === "Creator" && (
-              <>
-                <DropdownMenuItem
-                  onClick={async () => {
-                    const domain =
-                      typeof window !== "undefined"
-                        ? window.location.origin
-                        : "";
-                    const encodedEncryptedData = generateSecureLink(payment);
-                    navigator.clipboard.writeText(
-                      `${domain}/pay/?data=${encodedEncryptedData}`
-                    );
-                    toast.success("Copied");
-                  }}
-                >
-                  Copy payment URL
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-              </>
-            )}
+            {payment.type === "Creator" &&
+              t !== "Time Elapsed" &&
+              payment.status == "CREATED" && (
+                <>
+                  <DropdownMenuItem
+                    onClick={async () => {
+                      const domain =
+                        typeof window !== "undefined"
+                          ? window.location.origin
+                          : "";
+                      const encodedEncryptedData = generateSecureLink(payment);
+                      navigator.clipboard.writeText(
+                        `${domain}/pay/?data=${encodedEncryptedData}`
+                      );
+                      toast.success("Copied");
+                    }}
+                  >
+                    Copy payment URL
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                </>
+              )}
 
-            {payment?.status === "PAID" && payment.type === "Creator" && (
-              <>
-                <DropdownMenuItem>
-                  <CreatorsAction
-                    invoiceId={payment.id}
-                    state={true}
-                    text="Accept Payment"
-                    key="0"
-                  />
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <CreatorsAction
-                    invoiceId={payment.id}
-                    state={false}
-                    text="Reject Payment"
-                    key="1"
-                  />
-                </DropdownMenuItem>
-              </>
-            )}
+            {payment?.status === "PAID" &&
+              payment.type === "Creator" &&
+              t !== "Time Elapsed" && (
+                <>
+                  <DropdownMenuItem>
+                    <CreatorsAction
+                      invoiceId={payment.id}
+                      state={true}
+                      text="Accept Payment"
+                      key="0"
+                    />
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>
+                    <CreatorsAction
+                      invoiceId={payment.id}
+                      state={false}
+                      text="Reject Payment"
+                      key="1"
+                    />
+                  </DropdownMenuItem>
+                </>
+              )}
             {payment?.status === "CREATED" && (
               <DropdownMenuItem>
                 <CancelInvoice invoiceId={payment.id} />

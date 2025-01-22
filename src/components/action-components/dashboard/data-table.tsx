@@ -23,6 +23,39 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
+export const StatusDropdown = ({
+  value,
+  onChange,
+}: {
+  value: string;
+  onChange: (value: string) => void;
+}) => {
+  const statuses = [
+    { label: "All", value: "ALL" },
+    { label: "Created", value: "CREATED" },
+    { label: "Accepted", value: "ACCEPTED" },
+    { label: "Paid", value: "PAID" },
+    { label: "Rejected", value: "REJECTED" },
+    { label: "Cancelled", value: "CANCELLED" },
+    { label: "Refunded", value: "REFUNDED" },
+    { label: "Released", value: "RELEASED" },
+  ];
+
+  return (
+    <select
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+      className="px-4 py-2 border rounded-md w-52"
+    >
+      {statuses.map((status) => (
+        <option key={status.value} value={status.value}>
+          {status.label}
+        </option>
+      ))}
+    </select>
+  );
+};
+
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
@@ -36,8 +69,16 @@ const DataTable = <TData, TValue>({
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
   );
+  const [statusFilter, setStatusFilter] = React.useState<string>("ALL");
+
+  const filteredData =
+    statusFilter === "ALL"
+      ? data
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      : data.filter((row: any) => row.status === statusFilter);
+
   const table = useReactTable({
-    data,
+    data: filteredData,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
@@ -53,7 +94,7 @@ const DataTable = <TData, TValue>({
 
   return (
     <div>
-      <div className="flex items-center py-4">
+      <div className="flex items-center justify-between py-4">
         <Input
           placeholder="Filter id..."
           value={(table.getColumn("id")?.getFilterValue() as string) ?? ""}
@@ -62,6 +103,7 @@ const DataTable = <TData, TValue>({
           }
           className="max-w-sm"
         />
+        <StatusDropdown value={statusFilter} onChange={setStatusFilter} />
       </div>
       <div className="rounded-md border">
         <Table>

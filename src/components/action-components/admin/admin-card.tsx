@@ -19,12 +19,15 @@ import { useGetOwner } from "@/hooks/useGetOwner";
 import { useGetFeeReceiver } from "@/hooks/useGetFeeReceiver";
 import { Address } from "viem";
 import { useGetFee } from "@/hooks/useGetFee";
+import { useGetDefaultHoldPeriod } from "@/hooks/useGetDefaultHoldPeriod";
 
 const AdminCard = () => {
   const { address } = useAccount();
   const { data: allowedAddress, isLoading: isAllowedAddressLoading } =
     useGetOwner();
   const { data: fee } = useGetFee();
+
+  const { data: defaultHoldPeriod } = useGetDefaultHoldPeriod();
 
   const { data: feeReceiver } = useGetFeeReceiver();
 
@@ -104,7 +107,7 @@ const AdminCard = () => {
       <CardHeader>
         <CardTitle>Admin Page</CardTitle>
         <CardDescription>
-          *Only permitted address are allowed to see this page*
+          Only permitted address are allowed to see this page
         </CardDescription>
         <div className="mt-4 bg-muted p-3 rounded">
           <p className="text-sm font-medium">
@@ -114,6 +117,16 @@ const AdminCard = () => {
             <span className="font-mono text-primary">
               {feeReceiver
                 ? `${feeReceiver.slice(0, 8)}...${feeReceiver.slice(-6)}`
+                : "Loading..."}
+            </span>
+          </p>
+          <p className="text-sm font-medium">
+            <span className="text-muted-foreground">
+              Current Default Hold period:{" "}
+            </span>
+            <span className="font-mono text-primary">
+              {defaultHoldPeriod
+                ? Number(defaultHoldPeriod) / 3600 + " hours"
                 : "Loading..."}
             </span>
           </p>
