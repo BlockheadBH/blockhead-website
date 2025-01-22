@@ -1,4 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+/**
+ * Calculates the remaining time from a given "paid at" timestamp plus extra milliseconds
+ * until the current time. Returns a human-readable string in the format of:
+ *   "DDd HHh MMm SSs"
+ * or "Time Elapsed" if the target time has already passed, or "-" if not paid.
+ * @returns A formatted string of the remaining time or a fallback message.
+ */
 export const timeLeft = (paidAtTimestamp: any, extra: number = 0) => {
   if (paidAtTimestamp === "Not Paid" || paidAtTimestamp == null) {
     return "-";

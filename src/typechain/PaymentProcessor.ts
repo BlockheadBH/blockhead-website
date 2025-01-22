@@ -65,11 +65,11 @@ export interface PaymentProcessorInterface extends Interface {
       | "completeOwnershipHandover"
       | "createInvoice"
       | "creatorsAction"
-      | "getCurrentInvoiceId"
       | "getDefaultHoldPeriod"
       | "getFee"
       | "getFeeReceiver"
       | "getInvoiceData"
+      | "getNextInvoiceId"
       | "makeInvoicePayment"
       | "owner"
       | "ownershipHandoverExpiresAt"
@@ -98,6 +98,7 @@ export interface PaymentProcessorInterface extends Interface {
       | "OwnershipHandoverCanceled"
       | "OwnershipHandoverRequested"
       | "OwnershipTransferred"
+      | "UpdateHoldPeriod"
   ): EventFragment;
 
   encodeFunctionData(
@@ -121,10 +122,6 @@ export interface PaymentProcessorInterface extends Interface {
     values: [BigNumberish, boolean]
   ): string;
   encodeFunctionData(
-    functionFragment: "getCurrentInvoiceId",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
     functionFragment: "getDefaultHoldPeriod",
     values?: undefined
   ): string;
@@ -136,6 +133,10 @@ export interface PaymentProcessorInterface extends Interface {
   encodeFunctionData(
     functionFragment: "getInvoiceData",
     values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "getNextInvoiceId",
+    values?: undefined
   ): string;
   encodeFunctionData(
     functionFragment: "makeInvoicePayment",
@@ -212,10 +213,6 @@ export interface PaymentProcessorInterface extends Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "getCurrentInvoiceId",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
     functionFragment: "getDefaultHoldPeriod",
     data: BytesLike
   ): Result;
@@ -226,6 +223,10 @@ export interface PaymentProcessorInterface extends Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "getInvoiceData",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "getNextInvoiceId",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -417,6 +418,22 @@ export namespace OwnershipTransferredEvent {
   export type LogDescription = TypedLogDescription<Event>;
 }
 
+export namespace UpdateHoldPeriodEvent {
+  export type InputTuple = [
+    invoiceId: BigNumberish,
+    releaseDueTimestamp: BigNumberish
+  ];
+  export type OutputTuple = [invoiceId: bigint, releaseDueTimestamp: bigint];
+  export interface OutputObject {
+    invoiceId: bigint;
+    releaseDueTimestamp: bigint;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
+}
+
 export interface PaymentProcessor extends BaseContract {
   connect(runner?: ContractRunner | null): PaymentProcessor;
   waitForDeployment(): Promise<this>;
@@ -486,8 +503,6 @@ export interface PaymentProcessor extends BaseContract {
     "nonpayable"
   >;
 
-  getCurrentInvoiceId: TypedContractMethod<[], [bigint], "view">;
-
   getDefaultHoldPeriod: TypedContractMethod<[], [bigint], "view">;
 
   getFee: TypedContractMethod<[], [bigint], "view">;
@@ -499,6 +514,8 @@ export interface PaymentProcessor extends BaseContract {
     [InvoiceStructOutput],
     "view"
   >;
+
+  getNextInvoiceId: TypedContractMethod<[], [bigint], "view">;
 
   makeInvoicePayment: TypedContractMethod<
     [_invoiceId: BigNumberish],
@@ -584,9 +601,6 @@ export interface PaymentProcessor extends BaseContract {
     "nonpayable"
   >;
   getFunction(
-    nameOrSignature: "getCurrentInvoiceId"
-  ): TypedContractMethod<[], [bigint], "view">;
-  getFunction(
     nameOrSignature: "getDefaultHoldPeriod"
   ): TypedContractMethod<[], [bigint], "view">;
   getFunction(
@@ -602,6 +616,9 @@ export interface PaymentProcessor extends BaseContract {
     [InvoiceStructOutput],
     "view"
   >;
+  getFunction(
+    nameOrSignature: "getNextInvoiceId"
+  ): TypedContractMethod<[], [bigint], "view">;
   getFunction(
     nameOrSignature: "makeInvoicePayment"
   ): TypedContractMethod<[_invoiceId: BigNumberish], [string], "payable">;
@@ -723,6 +740,13 @@ export interface PaymentProcessor extends BaseContract {
     OwnershipTransferredEvent.OutputTuple,
     OwnershipTransferredEvent.OutputObject
   >;
+  getEvent(
+    key: "UpdateHoldPeriod"
+  ): TypedContractEvent<
+    UpdateHoldPeriodEvent.InputTuple,
+    UpdateHoldPeriodEvent.OutputTuple,
+    UpdateHoldPeriodEvent.OutputObject
+  >;
 
   filters: {
     "InvoiceAccepted(uint256)": TypedContractEvent<
@@ -833,6 +857,17 @@ export interface PaymentProcessor extends BaseContract {
       OwnershipTransferredEvent.InputTuple,
       OwnershipTransferredEvent.OutputTuple,
       OwnershipTransferredEvent.OutputObject
+    >;
+
+    "UpdateHoldPeriod(uint256,uint256)": TypedContractEvent<
+      UpdateHoldPeriodEvent.InputTuple,
+      UpdateHoldPeriodEvent.OutputTuple,
+      UpdateHoldPeriodEvent.OutputObject
+    >;
+    UpdateHoldPeriod: TypedContractEvent<
+      UpdateHoldPeriodEvent.InputTuple,
+      UpdateHoldPeriodEvent.OutputTuple,
+      UpdateHoldPeriodEvent.OutputObject
     >;
   };
 }

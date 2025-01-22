@@ -23,7 +23,6 @@ import { QRCodeSVG } from "qrcode.react";
 import { toast } from "sonner";
 import generateSecureLink from "@/lib/generate-link";
 import { Invoice } from "@/model/model";
-// import { useGetNextInvoiceId } from "@/hooks/useGetNextInvoiceId";
 
 let price: string;
 let id: string;

@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 "use client";
 import { ColumnDef } from "@tanstack/react-table";
 import { Invoice } from "@/model/model";
@@ -81,22 +82,22 @@ const columns: ColumnDef<Invoice>[] = [
     accessorKey: "holdPeriod",
     header: () => <div className="text-center">Hold Time</div>,
     cell: ({ row }) => {
-      const holdTimestamp = row.getValue("holdPeriod");
+      const t = row.getValue("holdPeriod");
+
       const payment = row.original;
 
-      // eslint-disable-next-line react-hooks/rules-of-hooks
       const [timeRemaining, setTimeRemaining] = React.useState(() =>
-        payment?.status === "ACCEPTED" ? timeLeft(holdTimestamp) : "-"
+        payment?.status === "ACCEPTED" ? timeLeft(t) : "-"
       );
 
-      // eslint-disable-next-line react-hooks/rules-of-hooks
       React.useEffect(() => {
-        if (payment?.status !== "ACCEPTED" || !holdTimestamp) {
+        if (payment?.status !== "ACCEPTED" || !t) {
           return;
         }
 
         const interval = setInterval(() => {
-          const updatedTime = timeLeft(holdTimestamp);
+          const updatedTime = timeLeft(t);
+
           setTimeRemaining(updatedTime);
 
           if (updatedTime === "Time Elapsed") {
@@ -105,7 +106,7 @@ const columns: ColumnDef<Invoice>[] = [
         }, 1000);
 
         return () => clearInterval(interval);
-      }, [holdTimestamp, payment?.status]);
+      }, [t, payment?.status]);
 
       return <div className="text-center">{timeRemaining}</div>;
     },

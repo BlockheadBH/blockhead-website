@@ -307,6 +307,25 @@ const _abi = [
     type: "event",
   },
   {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: "uint256",
+        name: "invoiceId",
+        type: "uint256",
+      },
+      {
+        indexed: true,
+        internalType: "uint256",
+        name: "releaseDueTimestamp",
+        type: "uint256",
+      },
+    ],
+    name: "UpdateHoldPeriod",
+    type: "event",
+  },
+  {
     inputs: [
       {
         internalType: "uint256",
@@ -374,19 +393,6 @@ const _abi = [
     name: "creatorsAction",
     outputs: [],
     stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [],
-    name: "getCurrentInvoiceId",
-    outputs: [
-      {
-        internalType: "uint256",
-        name: "",
-        type: "uint256",
-      },
-    ],
-    stateMutability: "view",
     type: "function",
   },
   {
@@ -489,6 +495,19 @@ const _abi = [
         internalType: "struct Invoice",
         name: "",
         type: "tuple",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "getNextInvoiceId",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
       },
     ],
     stateMutability: "view",

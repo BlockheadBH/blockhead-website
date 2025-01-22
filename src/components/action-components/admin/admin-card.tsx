@@ -126,7 +126,7 @@ const AdminCard = () => {
             </span>
             <span className="font-mono text-primary">
               {defaultHoldPeriod
-                ? Number(defaultHoldPeriod) / 3600 + " hours"
+                ? (Number(defaultHoldPeriod) / 60).toFixed(2) + " minutes"
                 : "Loading..."}
             </span>
           </p>
