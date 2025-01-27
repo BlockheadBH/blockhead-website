@@ -8,17 +8,19 @@ import { useGetOwner } from "@/hooks/useGetOwner";
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 
+// Navbar component definition
 const Navbar = () => {
-  const { address, isConnected } = useAccount();
-  const { data: allowedAddress } = useGetOwner();
-  const [admin, setAdmin] = useState(false);
-  const router = usePathname();
+  const { address, isConnected } = useAccount(); // Retrieve wallet address and connection status
+  const { data: allowedAddress } = useGetOwner(); // Fetch the contract owner's address
+  const [admin, setAdmin] = useState(false); // State to track if the connected wallet is the admin
+  const router = usePathname(); // Get the current route path
 
+  // Effect to check if the connected address matches the admin address
   useEffect(() => {
     if (isConnected && address && allowedAddress) {
-      setAdmin(address === allowedAddress);
+      setAdmin(address === allowedAddress); // Set admin status based on address comparison
     }
-  }, [isConnected, address, allowedAddress]);
+  }, [isConnected, address, allowedAddress]); // Dependency array for re-evaluation
 
   return (
     <nav className="bg-primary text-white p-4 shadow-md sticky top-0 ">
@@ -58,7 +60,7 @@ const Navbar = () => {
                     )}
                     href="/admin"
                   >
-                   ADMIN
+                    ADMIN
                   </Link>
                 ))}
               <ConnectKitButton />

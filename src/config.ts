@@ -12,7 +12,9 @@ const config = createConfig(
         http(`https://polygon-amoy.infura.io/v3/${apiKey}`),
       ]),
     },
+    // Define the application name displayed in wallets
     appName: "BlockHead Invoice",
+    // Provide the WalletConnect Project ID for WalletConnect integration
     walletConnectProjectId: walletConnectId,
   })
 );

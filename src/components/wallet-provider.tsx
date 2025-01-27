@@ -17,82 +17,103 @@ import {
 import { UserCreatedInvoice, Invoice, UserPaidInvoice } from "@/model/model";
 import { polygonAmoy } from "viem/chains";
 
+// Props type for the WalletProvider component
 type Props = {
-  children?: ReactNode;
+  children?: ReactNode; // Allows nested components inside WalletProvider
 };
+
+// Create a GraphQL client to fetch invoice data for a specific chain
 const client = (chainId: number) =>
   createClient({
-    url: THE_GRAPH_API_URL[chainId],
+    url: THE_GRAPH_API_URL[chainId], // Fetch the API URL from constants using the chainId
   });
+
+// GraphQL query to fetch invoices for a specific user
 const invoiceQuery = `query ($address: String!) {
-    user (id: $address) {
-      createdInvoices {
-        amountPaid
-        createdAt
-        id
-        paidAt
-        price
-        status
-        holdPeriod
-      }
-      paidInvoices {
-        amountPaid
-        createdAt
-        id
-        paidAt
-        price
-        status
-        holdPeriod
-      }
+  user (id: $address) {
+    createdInvoices {
+      amountPaid
+      createdAt
+      id
+      paidAt
+      price
+      status
+      holdPeriod
+    }
+    paidInvoices {
+      amountPaid
+      createdAt
+      id
+      paidAt
+      price
+      status
+      holdPeriod
+    }
   }
 }`;
 
-const fetchGasPrice = async (publicClient: any): Promise<bigint> => {
+// Utility function to fetch and calculate a higher gas price with a 3x multiplier
+const fetchGasPrice = async (
+  publicClient: any,
+  chainId: number
+): Promise<bigint> => {
   const gasPrice = await publicClient?.getGasPrice();
-  return (gasPrice * BigInt(300)) / BigInt(100);
+  return chainId === POLYGON_AMOY
+    ? (gasPrice * BigInt(300)) / BigInt(100)
+    : gasPrice;
 };
 
+// WalletProvider component that provides contract context to its children
 const WalletProvider = ({ children }: Props) => {
+  // Extract connected chain and user address
   const { chain, address } = useAccount();
-  const chainId = !chain ? POLYGON_AMOY : chain?.id;
-  const { data: walletClient } = useWalletClient();
-  const publicClient = usePublicClient();
+  const chainId = chain?.id || POLYGON_AMOY; // Default to POLYGON_AMOY if no chain is connected
+  const { data: walletClient } = useWalletClient(); // Get wallet client for transactions
+  const publicClient = usePublicClient(); // Public client to interact with blockchain
+
+  // State variables for loading and invoice data
   const [isLoading, setIsLoading] = useState<string>();
   const [invoiceData, setInvoiceData] = useState<Invoice[]>([]);
 
+  // Fetch invoice data when user address or chain changes
   useEffect(() => {
     const onAddress = async () => {
       await getInvoiceData();
     };
+
     if (!address || !chain) {
-      setInvoiceData([]);
+      setInvoiceData([]); // Clear data if no address or chain is available
     } else {
-      onAddress();
+      onAddress(); // Fetch invoice data for the connected account
     }
   }, [address, chain]);
 
+  // Error handler for blockchain operations
   const getError = (error: any) => {
     if (
       error.message.includes("user rejected transaction") ||
       error.message.includes("User denied transaction.")
     ) {
-      return;
+      return; // Ignore user rejection errors
     }
+
     const errorData = error.error?.data || error?.data;
 
+    // Check for specific error codes and display corresponding messages
     if (errorData) {
       for (const [errorCode, message] of Object.entries(errorMessages)) {
         if (errorData.includes(errorCode)) {
-          toast.error(message);
+          toast.error(message); // Show error notification
           return;
         }
       }
     }
 
     const message = error?.data?.message || error?.error?.data?.message;
-    toast.error(message || "Something went wrong");
+    toast.error(message || "Something went wrong"); // Show a generic error message
   };
 
+  // Fetch invoice data for the connected user
   const getInvoiceData = async () => {
     try {
       const { data, error } = await client(chainId)
@@ -103,10 +124,12 @@ const WalletProvider = ({ children }: Props) => {
         console.log(error.message);
       }
 
+      // Process created invoices
       const createdInvoice: UserCreatedInvoice[] =
         data?.user?.createdInvoices || [];
       const paidInvoices: UserPaidInvoice[] = data?.user?.paidInvoices || [];
 
+      // Format created invoices to fit with out model
       const createdInvoiceData: UserCreatedInvoice[] = createdInvoice.map(
         (invoice: any) => ({
           id: invoice?.id,
@@ -124,6 +147,7 @@ const WalletProvider = ({ children }: Props) => {
         })
       );
 
+      // Format paid invoices
       const paidInvoiceData: UserPaidInvoice[] = paidInvoices.map(
         (invoice: any) => ({
           id: invoice.id,
@@ -141,6 +165,7 @@ const WalletProvider = ({ children }: Props) => {
         })
       );
 
+      // Combine created and paid invoices into a single list
       const allInvoiceData: (UserCreatedInvoice | UserPaidInvoice)[] = [
         ...createdInvoiceData,
         ...paidInvoiceData,
@@ -152,12 +177,16 @@ const WalletProvider = ({ children }: Props) => {
     }
   };
 
+  // Function to create an invoice
   const createInvoice = async (invoicePrice: bigint): Promise<number> => {
-    setIsLoading("createInvoice");
+    setIsLoading("createInvoice"); // Set the loading state to indicate the operation in progress
 
-    let id = 0;
+    let id = 0; // Initialize the invoice ID to 0
     try {
-      const gasPrice = await fetchGasPrice(publicClient);
+      // Fetch gas price
+      const gasPrice = await fetchGasPrice(publicClient, chainId);
+
+      // Send a transaction to the PaymentProcessor contract to create the invoice
       const tx = await walletClient?.sendTransaction({
         chain: polygonAmoy,
         to: INVOICE_ADDRESS[chainId],
@@ -170,14 +199,17 @@ const WalletProvider = ({ children }: Props) => {
         gasPrice,
       });
 
+      // Wait for the transaction to be mined and fetch the receipt
       const receipt = await publicClient?.waitForTransactionReceipt({
         hash: tx!,
       });
 
+      // Extract the invoice ID from the logs in the transaction receipt
       const hexId = receipt?.logs[0].topics[1];
 
       id = parseInt(hexId!, 16);
-      console.log(receipt);
+
+      // Check the transaction status and provide feedback to the user
       if (receipt?.status) {
         toast.success("Invoice successfully created");
         await getInvoiceData();
@@ -187,8 +219,8 @@ const WalletProvider = ({ children }: Props) => {
     } catch (error) {
       getError(error);
     }
-    setIsLoading("");
-    return id;
+    setIsLoading(""); // Reset the loading state
+    return id; // Return the created invoice ID
   };
 
   const makeInvoicePayment = async (
@@ -199,7 +231,7 @@ const WalletProvider = ({ children }: Props) => {
 
     let success = false;
     try {
-      const gasPrice = await fetchGasPrice(publicClient);
+      const gasPrice = await fetchGasPrice(publicClient, chainId);
 
       const tx = await walletClient?.sendTransaction({
         chain: polygonAmoy,
@@ -242,7 +274,7 @@ const WalletProvider = ({ children }: Props) => {
     let progressToastId;
 
     try {
-      const gasPrice = await fetchGasPrice(publicClient);
+      const gasPrice = await fetchGasPrice(publicClient, chainId);
 
       const tx = await walletClient?.sendTransaction({
         chain: polygonAmoy,
@@ -286,7 +318,7 @@ const WalletProvider = ({ children }: Props) => {
     let success = false;
     let progressToastId;
     try {
-      const gasPrice = await fetchGasPrice(publicClient);
+      const gasPrice = await fetchGasPrice(publicClient, chainId);
 
       const tx = await walletClient?.sendTransaction({
         chain: polygonAmoy,
@@ -329,7 +361,7 @@ const WalletProvider = ({ children }: Props) => {
     let success = false;
     let progressToastId;
     try {
-      const gasPrice = await fetchGasPrice(publicClient);
+      const gasPrice = await fetchGasPrice(publicClient, chainId);
 
       const tx = await walletClient?.sendTransaction({
         chain: polygonAmoy,
@@ -375,7 +407,7 @@ const WalletProvider = ({ children }: Props) => {
     let success = false;
     let progressToastId;
     try {
-      const gasPrice = await fetchGasPrice(publicClient);
+      const gasPrice = await fetchGasPrice(publicClient, chainId);
 
       const tx = await walletClient?.sendTransaction({
         chain: polygonAmoy,
@@ -418,7 +450,7 @@ const WalletProvider = ({ children }: Props) => {
     let success = false;
     let progressToastId;
     try {
-      const gasPrice = await fetchGasPrice(publicClient);
+      const gasPrice = await fetchGasPrice(publicClient, chainId);
       const tx = await walletClient?.sendTransaction({
         chain: polygonAmoy,
         to: INVOICE_ADDRESS[chainId],
@@ -461,7 +493,7 @@ const WalletProvider = ({ children }: Props) => {
     let success = false;
     let progressToastId;
     try {
-      const gasPrice = await fetchGasPrice(publicClient);
+      const gasPrice = await fetchGasPrice(publicClient, chainId);
 
       const tx = await walletClient?.sendTransaction({
         chain: polygonAmoy,
@@ -508,7 +540,7 @@ const WalletProvider = ({ children }: Props) => {
     let success = false;
     let progressToastId;
     try {
-      const gasPrice = await fetchGasPrice(publicClient);
+      const gasPrice = await fetchGasPrice(publicClient, chainId);
 
       const tx = await walletClient?.sendTransaction({
         chain: polygonAmoy,
@@ -553,7 +585,7 @@ const WalletProvider = ({ children }: Props) => {
     let success = false;
     let progressToastId;
     try {
-      const gasPrice = await fetchGasPrice(publicClient);
+      const gasPrice = await fetchGasPrice(publicClient, chainId);
       const tx = await walletClient?.sendTransaction({
         chain: polygonAmoy,
         to: INVOICE_ADDRESS[chainId],
@@ -595,7 +627,7 @@ const WalletProvider = ({ children }: Props) => {
     let success = false;
     let progressToastId;
     try {
-      const gasPrice = await fetchGasPrice(publicClient);
+      const gasPrice = await fetchGasPrice(publicClient, chainId);
 
       const tx = await walletClient?.sendTransaction({
         chain: polygonAmoy,
@@ -639,7 +671,7 @@ const WalletProvider = ({ children }: Props) => {
     let success = false;
     let progressToastId;
     try {
-      const gasPrice = await fetchGasPrice(publicClient);
+      const gasPrice = await fetchGasPrice(publicClient, chainId);
       const tx = await walletClient?.sendTransaction({
         chain: polygonAmoy,
         to: INVOICE_ADDRESS[chainId],
@@ -674,6 +706,8 @@ const WalletProvider = ({ children }: Props) => {
     return success;
   };
 
+  // Contract interactions (e.g., createInvoice, makeInvoicePayment) are implemented below
+  // Each function interacts with the blockchain using `walletClient` and `publicClient`
   return (
     <ContractContext.Provider
       value={{

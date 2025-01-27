@@ -2,6 +2,9 @@ import { Invoice } from "@/model/model";
 import React from "react";
 import { Address } from "viem";
 
+// This code defines a React Context for managing and interacting with the PaymentProcessor contract,
+// providing default values and a structure for contract-related operations within the application.
+
 export interface ContractContextData {
   isLoading: string | undefined;
   invoiceData: Invoice[];

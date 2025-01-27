@@ -50,14 +50,12 @@ const columns: ColumnDef<Invoice>[] = [
       const paidAtTimestamp = row.getValue("paidAt");
       const payment = row.original;
 
-      // eslint-disable-next-line react-hooks/rules-of-hooks
       const [timeRemaining, setTimeRemaining] = React.useState(() =>
         payment?.status === "PAID"
           ? timeLeft(Number(paidAtTimestamp), 259200000)
           : "-"
       );
 
-      // eslint-disable-next-line react-hooks/rules-of-hooks
       React.useEffect(() => {
         if (payment?.status !== "PAID" || !paidAtTimestamp) {
           return;
