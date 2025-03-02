@@ -10,6 +10,7 @@ const nextConfig: NextConfig = {
   experimental: {
     optimizeCss: false,
   },
+  trailingSlash: true,
   async headers() {
     return [
       {
