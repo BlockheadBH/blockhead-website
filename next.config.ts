@@ -5,16 +5,16 @@ const nextConfig: NextConfig = {
   images: {
     unoptimized: true,
   },
-  assetPrefix: "./",
+  assetPrefix: "../",
   reactStrictMode: false,
+  trailingSlash: true,
   experimental: {
     optimizeCss: false,
   },
-  trailingSlash: true,
   async headers() {
     return [
       {
-        source: "/pay",
+        source: "/pay/",
         headers: [
           {
             key: "Cross-Origin-Opener-Policy",
