@@ -28,7 +28,7 @@ const HeroSection = () => {
           </Link>
 
           <Link
-            href="https://dog-corn-f6c.notion.site/Blockhead-9da8b2afab2c4ac78c2fcb8251f9c8c2"
+            href="https://blockhead.gitbook.io/bh"
             className={buttonVariants({ variant: "default" })}
             target="_blank"
             rel="noopener noreferrer"
